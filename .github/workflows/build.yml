@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup java
@@ -26,7 +26,7 @@ jobs:
           cache: sbt
       - uses: sbt/setup-sbt@v1
       - name: Build JS
-        run: sbt fastOptJS
+        run: sbt fastLinkJS
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
