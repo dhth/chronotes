@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    paths:
+      - "build.sbt"
+      - "project/**"
+      - "src/**"
+
+env:
+  JAVA_VERSION: '24'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - name: Build JS
+        run: sbt fastLinkJS
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - run: npm install
+      - run: npm run build

@@ -1,0 +1,7 @@
+target
+.bsp
+.metals
+.bloop
+node_modules
+dist
+.parcel-cache

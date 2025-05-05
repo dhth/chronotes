@@ -1,0 +1,33 @@
+name: lint
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    paths:
+      - "build.sbt"
+      - "project/**"
+      - "**.scala"
+      - ".scalafix.conf"
+      - ".scalafmt.conf"
+
+env:
+  JAVA_VERSION: '24'
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: sbt
+      - name: Install scalafmt
+        uses: jaxxstorm/action-install-gh-release@6096f2a2bbfee498ced520b6922ac2c06e990ed2 # v2.1.0
+        with:
+          repo: scalameta/scalafmt
+      - name: Check formatting
+        run: scalafmt --check src/main/scala

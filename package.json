@@ -1,0 +1,17 @@
+{
+  "source": "src/main/html/index.html",
+  "scripts": {
+    "start": "parcel --no-cache --dist-dir dist --log-level info",
+    "build": "parcel build --dist-dir dist --log-level info",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "parcel": "^2.1.0",
+    "postcss": "^8.5.3",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.5",
+    "@tailwindcss/postcss": "^4.1.5"
+  }
+}
