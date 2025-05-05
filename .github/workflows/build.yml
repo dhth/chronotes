@@ -15,7 +15,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup java
@@ -27,7 +27,6 @@ jobs:
       - uses: sbt/setup-sbt@v1
       - name: Build JS
         run: sbt fastOptJS
-      - run: ls target/scala-3.6.3/chronotes-fastopt
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
