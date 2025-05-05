@@ -2,7 +2,7 @@
   "source": "src/main/html/index.html",
   "scripts": {
     "start": "parcel --no-cache --dist-dir dist --log-level info",
-    "build": "parcel build --dist-dir dist --log-level info",
+    "build": "parcel build --dist-dir dist --log-level verbose",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
