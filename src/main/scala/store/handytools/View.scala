@@ -9,7 +9,6 @@ object View {
   def main_section(model: Model): Html[Msg] =
     div(_class := "flex flex-col pt-4 pb-2 max-sm:min-h-screen sm:h-screen")(
       heading(),
-      context(),
       model.currentNote |> notes_input,
       model |> notes_section,
       all_notes(model.notes, model.recentlyCopied)
@@ -19,13 +18,6 @@ object View {
     div(_class := "flex gap-4 items-center")(
       h1(_class := "flex-1 text-3xl font-semibold text-[#b8bb26]")(
         "chronotes"
-      )
-    )
-
-  private def context(): Html[Msg] =
-    div(_class := "mt-4 italic")(
-      p(_class := "text-sm text-[#ffffff]")(
-        "chronotes (short for \"chronological notes\") can come in handy when you need to take quick notes where each entry must have a timestamp associated with it."
       )
     )
 
@@ -103,7 +95,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
         "What is chronotes for?"
       ),
       p(_class := "mx-auto text-[#d3869b]")(
-        "Say you're following a checklist — such as for a software migration — and need to record timestamps for each step."
+        "Say you're following a checklist — such as for a software migration — and need to record each step along with a timestamp."
       ),
       p(_class := "mx-auto text-[#83a598]")(
         "You could use chronotes to handle the timestamps automatically and simply copy the final list."
