@@ -9,7 +9,6 @@ object View {
   def main_section(model: Model): Html[Msg] =
     div(_class := "flex flex-col pt-4 pb-2 max-sm:min-h-screen sm:h-screen")(
       heading(),
-      context(),
       model.currentNote |> notes_input,
       model |> notes_section,
       all_notes(model.notes, model.recentlyCopied)
@@ -19,13 +18,6 @@ object View {
     div(_class := "flex gap-4 items-center")(
       h1(_class := "flex-1 text-3xl font-semibold text-[#b8bb26]")(
         "chronotes"
-      )
-    )
-
-  private def context(): Html[Msg] =
-    div(_class := "mt-4 italic")(
-      p(_class := "text-sm text-[#ffffff]")(
-        "chronotes (short for \"chronological notes\") can come in handy when you need to take quick notes where each entry must have a timestamp associated with it."
       )
     )
 
@@ -66,7 +58,7 @@ object View {
 
   private def notes_section(model: Model): Html[Msg] =
     if (model.notes.isEmpty) {
-      div()
+      intro_section()
     } else {
       val inputs = model.notes.zipWithIndex.map(
         note_entry(model.currentNote.flatMap(_.index))
@@ -79,6 +71,39 @@ object View {
         children*
       )
     }
+
+  private def intro_section(): Html[Msg] =
+    div(
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 overflow-x-scroll md:overflow-y-scroll"
+    )(
+      pre(
+        _class := "mx-auto hidden sm:block text-[#b8bb26] mb-4",
+        id     := "intro-banner"
+      )("""
+         888                                        888
+         888                                        888
+         888                                        888
+ .d8888b 88888b.  888d888 .d88b.  88888b.   .d88b.  888888 .d88b.  .d8888b
+d88P"    888 "88b 888P"  d88""88b 888 "88b d88""88b 888   d8P  Y8b 88K
+888      888  888 888    888  888 888  888 888  888 888   88888888 "Y8888b.
+Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
+ "Y8888P 888  888 888     "Y88P"  888  888  "Y88P"   "Y888 "Y8888   88888P'
+"""),
+      p(
+        _class := "mx-auto text-xl underline font-semibold text-[#fabd2f]"
+      )(
+        "What is chronotes for?"
+      ),
+      p(_class := "mx-auto text-[#d3869b]")(
+        "Say you're following a checklist — such as for a software migration — and need to record each step along with a timestamp."
+      ),
+      p(_class := "mx-auto text-[#83a598]")(
+        "You could use chronotes to handle the timestamps automatically and simply copy the final list."
+      ),
+      p(_class := "mx-auto text-[#bdae93] italic text-sm")(
+        "(yes, it's for a very small niche :D)"
+      )
+    )
 
   private def note_entry(currently_edited_index: Option[Int])(
       note: Note,
