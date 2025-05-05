@@ -29,6 +29,6 @@ jobs:
         run: sbt fastLinkJS
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: 'v20.19.1'
       - run: npm install
       - run: npm run build --verbose
