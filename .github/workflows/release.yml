@@ -31,7 +31,6 @@ jobs:
           sed -i '' 's|chronotes-fastopt|chronotes-opt|' src/main/html/chronotes.js
       - name: Build JS
         run: sbt fullLinkJS
-      - run: git checkout src/main/html/chronotes.js
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
