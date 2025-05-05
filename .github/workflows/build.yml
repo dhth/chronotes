@@ -8,6 +8,7 @@ on:
       - "build.sbt"
       - "project/**"
       - "src/**"
+      - ".github/workflows/build.yml"
 
 env:
   JAVA_VERSION: '24'
@@ -30,4 +31,4 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - run: npm install
-      - run: npm run build
+      - run: npm run build --verbose
