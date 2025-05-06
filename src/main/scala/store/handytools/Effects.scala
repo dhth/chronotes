@@ -45,4 +45,10 @@ object Effects {
     }
 
     Cmd.Run(themeIO)(Msg.UserThemeLoaded(_))
+
+  def getCurrentDate(): Cmd[IO, Msg] =
+    val datetime = IO {
+      new Date()
+    }
+    Cmd.Run(datetime)(Msg.CurrentTimeFetchedForSampleNotes(_))
 }
