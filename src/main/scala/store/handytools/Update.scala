@@ -4,7 +4,7 @@ import tyrian.Cmd
 import cats.effect.IO
 import Extensions.*
 import scala.scalajs.js.Date
-import Effects.{copyToClipboard, tickAfterDelay, focusElementById}
+import Effects.{copyToClipboard, focusElementById, getCurrentDate}
 import scala.concurrent.duration.DurationInt
 
 object Update {
@@ -91,7 +91,7 @@ object Update {
       (model.copy(currentNote = None), Cmd.None)
 
     case Msg.UserRequestedCopyToClipboard =>
-      val notes = model.notes.map(get_note_line).mkString("\n")
+      val notes = model.notes.map(getNoteLine).mkString("\n")
       (model, notes |> copyToClipboard)
 
     case Msg.CopyContentsAttempted(errored) =>
@@ -100,10 +100,23 @@ object Update {
         case false =>
           (
             model.copy(recentlyCopied = true),
-            tickAfterDelay(Msg.ResetCopyButton, 1.second)
+            Cmd.emitAfterDelay(Msg.ResetCopyButton, 1.second)
           )
 
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
     case Msg.UserThemeChanged =>
       (model.copy(theme = model.theme |> Theme.getNext), Cmd.None)
+    case Msg.UserRequestedSampleNotes =>
+      (model, getCurrentDate())
+    case Msg.CurrentTimeFetchedForSampleNotes(date) =>
+      (model.copy(notes = date |> sampleNotes), Cmd.None)
+    case Msg.UserRequestedReset =>
+      (
+        model.copy(
+          currentNote = None,
+          notes = Vector.empty,
+          recentlyCopied = false
+        ),
+        "note-input" |> focusElementById
+      )
 }

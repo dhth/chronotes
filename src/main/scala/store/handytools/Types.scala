@@ -2,6 +2,8 @@ package store.handytools
 
 import scala.scalajs.js.Date
 
+val sampleNotesDelta = 60 * 1000
+
 enum Theme:
   case Light, Dark
 
@@ -31,7 +33,19 @@ final case class PotentialNote(
 
 final case class Note(body: String, timestamp: Date)
 
-def get_note_line(note: Note): String =
+def sampleNotes(baseLineDate: Date): Vector[Note] =
+  val startDate = new Date(baseLineDate.getTime - sampleNotesDelta * 5)
+
+  (1 to 5)
+    .map(i =>
+      Note(
+        s"step ${i} of migration",
+        new Date(startDate.getTime + sampleNotesDelta * i)
+      )
+    )
+    .toVector
+
+def getNoteLine(note: Note): String =
   s"${note.timestamp.toLocaleString}: ${note.body}"
 
 enum TimestampUpdateType:
@@ -63,4 +77,7 @@ enum Msg:
   case UserRequestedCopyToClipboard
   case CopyContentsAttempted(errored: Boolean)
   case ResetCopyButton
+  case UserRequestedSampleNotes
+  case CurrentTimeFetchedForSampleNotes(date: Date)
+  case UserRequestedReset
   case NoOp

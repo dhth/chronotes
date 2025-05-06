@@ -30,9 +30,9 @@ object View {
       p(_class := "font-semibold")(
         s"Type note entry and press enter or click \"${verb}\""
       ),
-      form(_class := "flex gap-2 items-center mt-2")(
+      form(_class := "flex gap-2 max-sm:gap-1 items-center mt-2")(
         input(
-          _class := s"flex-1 outline-2 outline-[#928374] ${focusBorderClass} text-[#ffffff] h-10 p-2",
+          _class := s"flex-1 outline-2 outline-[#928374] ${focusBorderClass} text-[#ffffff] h-10 max-sm:h-8 p-2",
           id           := "note-input",
           autoComplete := "off",
           attribute("data-1p-ignore", ""),
@@ -40,7 +40,7 @@ object View {
           onInput(Msg.UserEnteredNoteBody(_))
         ),
         button(
-          _class := s"${bgClass} text-[#282828] disabled:bg-[#928374] text-lg p-2 font-semibold cursor-pointer",
+          _class := s"${bgClass} text-[#282828] disabled:bg-[#928374] text-lg p-2 font-semibold cursor-pointer max-sm:text-sm",
           disabled(note.map(_.body.isEmpty).getOrElse(true)),
           onClick(Msg.UserSubmittedNewNote)
         )(
@@ -50,7 +50,7 @@ object View {
           case true => Empty
           case false =>
             button(
-              _class := "bg-[#fb4934] text-[#282828] text-lg p-2 font-semibold cursor-pointer",
+              _class := "bg-[#fb4934] text-[#282828] text-lg p-2 font-semibold cursor-pointer max-sm:text-sm",
               onClick(Msg.UserRequestedEditCancellation)
             )("cancel")
       )
@@ -66,7 +66,7 @@ object View {
       val children = List(p(_class := "text-xl mb-2")("Entries")) ++ inputs
 
       div(
-        _class := "md:flex-1 flex flex-col gap-2 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 md:overflow-y-scroll"
+        _class := "md:flex-1 flex flex-col gap-2 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-scroll"
       )(
         children*
       )
@@ -74,7 +74,7 @@ object View {
 
   private def intro_section(): Html[Msg] =
     div(
-      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 overflow-x-scroll md:overflow-y-scroll"
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 overflow-x-scroll md:overflow-y-scroll"
     )(
       pre(
         _class := "mx-auto hidden sm:block text-[#b8bb26] mb-4",
@@ -102,6 +102,12 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       ),
       p(_class := "mx-auto text-[#bdae93] italic text-sm")(
         "(yes, it's for a very small niche :D)"
+      ),
+      button(
+        _class := "bg-[#8ec07c] text-[#282828] mx-auto mt-4 px-2 py-1 font-semibold cursor-pointer",
+        onClick(Msg.UserRequestedSampleNotes)
+      )(
+        "show me some samples"
       )
     )
 
@@ -117,7 +123,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
     }
 
     div(
-      _class := s"flex gap-2 text-sm items-center hover:text-[#fabd2f] hover:text-semibold"
+      _class := s"flex gap-2 max-sm:gap-1 text-sm items-center hover:text-[#fabd2f] hover:text-semibold"
     )(
       p()(
         note.timestamp.toLocaleTimeString
@@ -174,21 +180,26 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       div()
     } else {
       div(
-        _class := "mt-4 md:h-1/3 md:overflow-y-scroll p-4 border-2 border-dotted border-[#928374] border-opacity-10"
+        _class := "mt-4 md:h-1/3 md:overflow-y-scroll p-4 max-sm:p-2 border-2 border-dotted border-[#928374] border-opacity-10"
       )(
-        div(_class := "flex items-center")(
+        div(_class := "flex gap-1 items-center")(
           p(_class := "flex-1 text-lg text-[#ffffff]")("Notes"),
           button(
             _class := s"px-2 py-1 right-0 ${buttonClass} text-[#282828] font-semibold cursor-pointer",
             title := "copy notes to clipboard",
             onClick(Msg.UserRequestedCopyToClipboard)
-          )(buttonText)
+          )(buttonText),
+          button(
+            _class := s"px-2 py-1 right-0 bg-[#fb4934] text-[#282828] font-semibold cursor-pointer",
+            title := "reset",
+            onClick(Msg.UserRequestedReset)
+          )("reset")
         ),
         pre(
           _class := "text-sm mt-4 text-[#ffffff] overflow-x-auto",
           id     := "rendered-notes"
         )(
-          notes.map(get_note_line).mkString("\n")
+          notes.map(getNoteLine).mkString("\n")
         )
       )
     }
