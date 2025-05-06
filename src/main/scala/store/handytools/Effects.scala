@@ -3,7 +3,6 @@ package store.handytools
 import tyrian.Cmd
 import cats.effect.IO
 import scala.scalajs.js.Date
-import scala.concurrent.duration.FiniteDuration
 import org.scalajs.dom.{document, window}
 import org.scalajs.dom.html
 
@@ -25,10 +24,6 @@ object Effects {
     }
 
     Cmd.Run(clipboardIO)(identity)
-
-  def tickAfterDelay(msg: Msg, delay: FiniteDuration): Cmd[IO, Msg] =
-    val delayedIO = IO.sleep(delay).as(msg)
-    Cmd.Run(delayedIO)(identity)
 
   def focusElementById(elementId: String): Cmd[IO, Nothing] =
     Cmd.SideEffect(

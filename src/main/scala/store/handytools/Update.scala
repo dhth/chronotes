@@ -4,12 +4,7 @@ import tyrian.Cmd
 import cats.effect.IO
 import Extensions.*
 import scala.scalajs.js.Date
-import Effects.{
-  copyToClipboard,
-  tickAfterDelay,
-  focusElementById,
-  getCurrentDate
-}
+import Effects.{copyToClipboard, focusElementById, getCurrentDate}
 import scala.concurrent.duration.DurationInt
 
 object Update {
@@ -105,7 +100,7 @@ object Update {
         case false =>
           (
             model.copy(recentlyCopied = true),
-            tickAfterDelay(Msg.ResetCopyButton, 1.second)
+            Cmd.emitAfterDelay(Msg.ResetCopyButton, 1.second)
           )
 
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
