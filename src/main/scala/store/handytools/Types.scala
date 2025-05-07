@@ -2,7 +2,7 @@ package store.handytools
 
 import scala.scalajs.js.Date
 
-val sampleNotesDelta = 60 * 1000
+val minute = 60 * 1000
 
 enum Theme:
   case Light, Dark
@@ -34,16 +34,16 @@ final case class PotentialNote(
 final case class Note(body: String, timestamp: Date)
 
 def sampleNotes(baseLineDate: Date): Vector[Note] =
-  val startDate = new Date(baseLineDate.getTime - sampleNotesDelta * 5)
-
-  (1 to 5)
-    .map(i =>
-      Note(
-        s"step ${i} of migration",
-        new Date(startDate.getTime + sampleNotesDelta * i)
-      )
-    )
-    .toVector
+  val startDate = new Date(baseLineDate.getTime - minute * 201)
+  Vector(
+    ("Logged into backup AWS account", 0),
+    ("Started copy of recovery point to source account", 5),
+    ("Why is this taking so long?...", 52),
+    ("Gotta be done soon...", 88),
+    ("Surely, anytime now...", 152),
+    ("Realized I chose the wrong recovery point", 200),
+    ("Shut down computer", 201)
+  ).map((body, i) => Note(body, new Date(startDate.getTime + minute * i)))
 
 def getNoteLine(note: Note): String =
   s"${note.timestamp.toLocaleString}: ${note.body}"

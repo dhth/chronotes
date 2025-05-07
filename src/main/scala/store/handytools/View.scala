@@ -7,7 +7,7 @@ import Extensions.*
 
 object View {
   def main_section(model: Model): Html[Msg] =
-    div(_class := "flex flex-col pt-4 pb-2 max-sm:min-h-screen sm:h-screen")(
+    div(_class := "flex flex-col py-4 max-sm:min-h-screen sm:h-screen")(
       heading(),
       model.currentNote |> notes_input,
       model |> notes_section,
