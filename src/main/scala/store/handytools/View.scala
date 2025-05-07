@@ -66,7 +66,7 @@ object View {
       val children = List(p(_class := "text-xl mb-2")("Entries")) ++ inputs
 
       div(
-        _class := "md:flex-1 flex flex-col gap-2 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-scroll"
+        _class := "md:flex-1 flex flex-col gap-2 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
       )(
         children*
       )
@@ -74,7 +74,7 @@ object View {
 
   private def intro_section(): Html[Msg] =
     div(
-      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 overflow-x-scroll md:overflow-y-scroll"
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 overflow-x-auto md:overflow-y-auto"
     )(
       pre(
         _class := "mx-auto hidden sm:block text-[#b8bb26] mb-4",
@@ -90,7 +90,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
  "Y8888P 888  888 888     "Y88P"  888  888  "Y88P"   "Y888 "Y8888   88888P'
 """),
       p(
-        _class := "mx-auto text-xl underline font-semibold text-[#fabd2f]"
+        _class := "mx-auto text-xl font-semibold text-[#fabd2f]"
       )(
         "What is chronotes for?"
       ),
@@ -180,7 +180,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       div()
     } else {
       div(
-        _class := "mt-4 md:h-1/3 md:overflow-y-scroll p-4 max-sm:p-2 border-2 border-dotted border-[#928374] border-opacity-10"
+        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted border-[#928374] border-opacity-10"
       )(
         div(_class := "flex gap-1 items-center")(
           p(_class := "flex-1 text-lg text-[#ffffff]")("Notes"),
