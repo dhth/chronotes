@@ -66,7 +66,7 @@ object View {
       val children = List(p(_class := "text-xl mb-2")("Entries")) ++ inputs
 
       div(
-        _class := "md:flex-1 flex flex-col gap-2 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
+        _class := "md:flex-1 flex flex-col gap-6 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
       )(
         children*
       )
@@ -111,11 +111,13 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       )
     )
 
-  private def note_entry(currently_edited_index: Option[Int])(
+  private def note_entry(
+      currentlyEditedIndex: Option[Int]
+  )(
       note: Note,
       index: Int
   ): Html[Msg] =
-    val isDisabled = currently_edited_index.isDefined
+    val isDisabled = currentlyEditedIndex.isDefined
     val cursor = if (isDisabled) {
       "cursor-not-allowed"
     } else {
@@ -123,48 +125,54 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
     }
 
     div(
-      _class := s"flex gap-2 max-sm:gap-1 text-sm items-center hover:text-[#fabd2f] hover:text-semibold"
+      _class := "flex flex-col gap-2 items-left hover:text-[#fabd2f] hover:text-semibold"
     )(
-      p()(
-        note.timestamp.toLocaleTimeString
+      div(
+        _class := "flex gap-2"
+      )(
+        p()(
+          note.timestamp.toLocaleTimeString
+        ),
+        p(_class := "flex-1")(note.body)
       ),
-      p(_class := "flex-1")(note.body),
-      button(
-        _class := s"px-2 py-1 bg-[#fe8019] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ${isDisabled}",
-        title := "edit note",
-        disabled(isDisabled),
-        onClick(
-          Msg.UserRequestedToEditNote(index)
-        )
-      )("✎"),
-      button(
-        _class := s"px-2 py-1 bg-[#fabd2f] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ",
-        title := "move timestamp backwards by a minute",
-        disabled(isDisabled),
-        onClick(
-          Msg.UserRequestedTimeStampBeUpdated(
-            index,
-            TimestampUpdateType.PushBehind
+      div(_class := "flex gap-1 text-xs")(
+        button(
+          _class := s"px-2 py-1 bg-[#fe8019] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ${isDisabled}",
+          title := "edit note",
+          disabled(isDisabled),
+          onClick(
+            Msg.UserRequestedToEditNote(index)
           )
-        )
-      )("◀"),
-      button(
-        _class := s"px-2 py-1 bg-[#83a598] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
-        title := "move timestamp forwards by a minute",
-        disabled(isDisabled),
-        onClick(
-          Msg.UserRequestedTimeStampBeUpdated(
-            index,
-            TimestampUpdateType.PushForward
+        )("✎"),
+        button(
+          _class := s"px-2 py-1 bg-[#fabd2f] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ",
+          title := "move timestamp backwards by a minute",
+          disabled(isDisabled),
+          onClick(
+            Msg.UserRequestedTimeStampBeUpdated(
+              index,
+              TimestampUpdateType.PushBehind
+            )
           )
-        )
-      )("▶"),
-      button(
-        _class := s"px-2 py-1 bg-[#fb4934] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
-        title := "delete note",
-        disabled(isDisabled),
-        onClick(Msg.UserRequestedNoteDeletion(index))
-      )("⌫")
+        )("◀"),
+        button(
+          _class := s"px-2 py-1 bg-[#83a598] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
+          title := "move timestamp forwards by a minute",
+          disabled(isDisabled),
+          onClick(
+            Msg.UserRequestedTimeStampBeUpdated(
+              index,
+              TimestampUpdateType.PushForward
+            )
+          )
+        )("▶"),
+        button(
+          _class := s"px-2 py-1 bg-[#fb4934] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
+          title := "delete note",
+          disabled(isDisabled),
+          onClick(Msg.UserRequestedNoteDeletion(index))
+        )("⌫")
+      )
     )
 
   private def all_notes(
