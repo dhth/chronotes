@@ -129,13 +129,8 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
     div(
       _class := "flex flex-col gap-2 items-left hover:text-[#fabd2f] hover:text-semibold"
     )(
-      div(
-        _class := "flex gap-2"
-      )(
-        p()(
-          note.timestamp.toLocaleTimeString
-        ),
-        p(_class := "flex-1")(note.body)
+      p(_class := "flex-1")(
+        s"${note.timestamp.toLocaleTimeString}: ${note.body}"
       ),
       div(_class := "flex gap-1 text-xs")(
         button(
