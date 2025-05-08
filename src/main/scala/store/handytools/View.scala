@@ -140,7 +140,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
           onClick(
             Msg.UserRequestedToEditNote(index)
           )
-        )("✎"),
+        )("~"),
         button(
           _class := s"px-2 py-1 bg-[#fabd2f] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ",
           title := "move timestamp backwards by a minute",
@@ -151,7 +151,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
               TimestampUpdateType.PushBehind
             )
           )
-        )("◀"),
+        )("<"),
         button(
           _class := s"px-2 py-1 bg-[#83a598] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
           title := "move timestamp forwards by a minute",
@@ -162,13 +162,13 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
               TimestampUpdateType.PushForward
             )
           )
-        )("▶"),
+        )(">"),
         button(
           _class := s"px-2 py-1 bg-[#fb4934] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
           title := "delete note",
           disabled(isDisabled),
           onClick(Msg.UserRequestedNoteDeletion(index))
-        )("⌫")
+        )("x")
       )
     )
 
