@@ -65,7 +65,7 @@ object View {
       )
 
       div(
-        _class := "mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
+        _class := "flex-1 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
       )(
         p(_class := "text-xl")("Entries"),
         div(_class := "mt-4 md:flex-1 flex flex-col gap-6")(
