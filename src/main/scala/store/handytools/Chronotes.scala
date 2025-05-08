@@ -2,7 +2,6 @@ package store.handytools
 
 import cats.effect.IO
 import tyrian.Html.*
-import View.main_section
 import tyrian.*
 
 import scala.scalajs.js.annotation.*
@@ -27,7 +26,7 @@ object Chronotes extends TyrianIOApp[Msg, Model]:
       className := s"${dark} bg-[#282828] text-[#fbf1c7]"
     )(
       div(className := "w-4/5 max-sm:w-full max-sm:px-4 mx-auto")(
-        main_section(model)
+        View.mainSection(model)
       )
     )
 
