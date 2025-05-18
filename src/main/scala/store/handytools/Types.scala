@@ -23,7 +23,8 @@ final case class Model(
     currentNote: Option[PotentialNote],
     notes: Vector[Note],
     recentlyCopied: Boolean,
-    theme: Theme
+    theme: Theme,
+    orderingChanged: Boolean
 )
 
 final case class PotentialNote(
@@ -31,7 +32,7 @@ final case class PotentialNote(
     index: Option[Int] = None
 )
 
-final case class Note(body: String, timestamp: Date)
+final case class Note(id: Int, body: String, timestamp: Date)
 
 def sampleNotes(baseLineDate: Date): Vector[Note] =
   val startDate = new Date(baseLineDate.getTime - minute * 201)
@@ -43,7 +44,7 @@ def sampleNotes(baseLineDate: Date): Vector[Note] =
     ("Surely, anytime now...", 152),
     ("Realized I chose the wrong recovery point", 200),
     ("Shut down computer", 201)
-  ).map((body, i) => Note(body, new Date(startDate.getTime + minute * i)))
+  ).map((body, i) => Note(i, body, new Date(startDate.getTime + minute * i)))
 
 def getNoteLine(note: Note): String =
   s"${note.timestamp.toLocaleString}: ${note.body}"
@@ -57,7 +58,8 @@ object Model {
       currentNote = None,
       notes = Vector.empty,
       recentlyCopied = false,
-      theme = Theme.Dark
+      theme = Theme.Dark,
+      orderingChanged = false
     )
 }
 
@@ -80,4 +82,6 @@ enum Msg:
   case UserRequestedSampleNotes
   case CurrentTimeFetchedForSampleNotes(date: Date)
   case UserRequestedReset
+  case NoteOrderingChanged
+  case ResetNoteOrderingFlash
   case NoOp

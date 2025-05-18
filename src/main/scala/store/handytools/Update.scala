@@ -24,7 +24,7 @@ object Update {
             case None =>
               (
                 model.copy(currentNote = None),
-                Effects.getNoteWithCurrentTime(note.body)
+                Effects.getNoteWithCurrentTime(model.notes.length, note.body)
               )
             case Some(index) =>
               model.notes
@@ -75,7 +75,13 @@ object Update {
           .updated(index, updatedNote)
           .sortWith((a, b) => a.timestamp.getTime() < b.timestamp.getTime())
 
-        (model.copy(notes = updatesNotes), Cmd.None)
+        val effect = if (updatesNotes.map(_.id) == model.notes.map(_.id)) {
+          Cmd.None
+        } else {
+          Cmd.emit(Msg.NoteOrderingChanged)
+        }
+
+        (model.copy(notes = updatesNotes), effect)
       }
 
     case Msg.UserRequestedToEditNote(index) =>
@@ -106,12 +112,16 @@ object Update {
           )
 
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
+
     case Msg.UserThemeChanged =>
       (model.copy(theme = Theme.getNext(model.theme)), Cmd.None)
+
     case Msg.UserRequestedSampleNotes =>
       (model, getCurrentDate())
+
     case Msg.CurrentTimeFetchedForSampleNotes(date) =>
       (model.copy(notes = sampleNotes(date)), Cmd.None)
+
     case Msg.UserRequestedReset =>
       (
         model.copy(
@@ -121,4 +131,16 @@ object Update {
         ),
         focusElementById("note-input")
       )
+
+    case Msg.NoteOrderingChanged =>
+      model.orderingChanged match
+        case false =>
+          (
+            model.copy(orderingChanged = true),
+            Cmd.emitAfterDelay(Msg.ResetNoteOrderingFlash, 2.second)
+          )
+        case true => (model, Cmd.None)
+
+    case Msg.ResetNoteOrderingFlash =>
+      (model.copy(orderingChanged = false), Cmd.None)
 }
