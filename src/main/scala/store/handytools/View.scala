@@ -7,25 +7,44 @@ import tyrian.Empty
 object View {
   def mainSection(model: Model): Html[Msg] =
     div(_class := "flex flex-col py-4 max-sm:min-h-screen sm:h-screen")(
-      heading(),
+      heading(model.theme),
       notesInput(model.currentNote),
       notesSection(model),
       allNotes(model.notes, model.recentlyCopied)
     )
 
-  private def heading(): Html[Msg] =
+  private def heading(theme: Theme): Html[Msg] =
     div(_class := "flex gap-2 items-center")(
-      h1(_class := "text-3xl font-semibold text-[#b8bb26]")(
-        "chronotes"
+      div(_class := "flex flex-1 gap-2 items-center")(
+        h1(
+          _class := "text-3xl font-semibold dark:text-blue-300 text-blue-800"
+        )(
+          "chronotes"
+        ),
+        p(_class := "text-sm font-semibold dark:text-slate-400 text-slate-700")(
+          "(wip)"
+        )
       ),
-      p(_class := "text-sm font-semibold text-[#b8bb26]")(
-        "(wip)"
+      button(
+        _class := "text-2xl",
+        title  := themeTooltip(theme),
+        onClick(Msg.UserRequestedThemeChange)
+      )(
+        theme.icon
       )
     )
 
+  private def themeTooltip(theme: Theme): String =
+    s"using ${theme.name} theme; click to switch to ${theme.next.name}"
+
   private def notesInput(note: Option[PotentialNote]): Html[Msg] =
-    val (verb, focusBorderClass, bgClass) = note.flatMap(_.index) match
-      case None    => ("add", "focus:outline-[#b8bb26]", "bg-[#b8bb26]")
+    val (verb, inputBorderClass, buttonBgClass) = note.flatMap(_.index) match
+      case None =>
+        (
+          "add",
+          "dark:outline-gray-500 outline-slate-400 dark:focus:outline-blue-400 focus:outline-blue-700",
+          "bg-blue-300 text-neutral-800"
+        )
       case Some(_) => ("update", "focus:outline-[#fe8019]", "bg-[#fe8019]")
 
     div(_class := "mt-6")(
@@ -34,15 +53,19 @@ object View {
       ),
       form(_class := "flex gap-2 max-sm:gap-1 items-center mt-2")(
         input(
-          _class := s"flex-1 outline-2 outline-[#928374] ${focusBorderClass} text-[#ffffff] h-10 max-sm:h-8 p-2",
-          id           := "note-input",
+          _class := s"flex-1 outline-2 ${inputBorderClass} h-10 max-sm:h-8 p-2",
+          id     := "note-input",
           autoComplete := "off",
           attribute("data-1p-ignore", ""),
           value := note.map(_.body).getOrElse(""),
           onInput(Msg.UserEnteredNoteBody(_))
         ),
         button(
-          _class := s"${bgClass} text-[#282828] disabled:bg-[#928374] text-lg p-2 font-semibold cursor-pointer max-sm:text-sm",
+          _class := List(
+            s"${buttonBgClass} text-neutral-800 dark:disabled:bg-neutral-500",
+            "disabled:bg-gray-400 dark:bg-blue-400 bg-blue-300",
+            "text-lg p-2 font-semibold cursor-pointer max-sm:text-sm"
+          ).mkString(" "),
           disabled(note.map(_.body.isEmpty).getOrElse(true)),
           onClick(Msg.UserSubmittedNewNote)
         )(
@@ -52,7 +75,10 @@ object View {
           case true => Empty
           case false =>
             button(
-              _class := "bg-[#fb4934] text-[#282828] text-lg p-2 font-semibold cursor-pointer max-sm:text-sm",
+              _class := List(
+                "dark:bg-rose-500 bg-rose-400 text-neutral-800",
+                "text-lg p-2 font-semibold cursor-pointer max-sm:text-sm"
+              ).mkString(" "),
               onClick(Msg.UserRequestedEditCancellation)
             )("cancel")
       )
@@ -72,7 +98,7 @@ object View {
       )
 
       div(
-        _class := s"flex-1 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
+        _class := s"flex-1 mt-4 border-2 border-dotted dark:border-blue-400 border-blue-600 border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto dark:bg-slate-800 bg-blue-100"
       )(
         div(_class := "flex gap-2 items-center")(
           p(_class := "text-xl")("Entries")
@@ -85,37 +111,36 @@ object View {
 
   private def introSection(): Html[Msg] =
     div(
-      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-4 overflow-x-auto md:overflow-y-auto"
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted dark:border-blue-400 border-blue-700 p-8 max-sm:p-4 overflow-x-auto md:overflow-y-auto dark:bg-slate-800 bg-blue-100"
     )(
       pre(
-        _class := "mx-auto hidden sm:block text-[#b8bb26] mb-4",
-        id     := "intro-banner"
+        _class := "mx-auto hidden sm:block dark:text-blue-400 text-blue-800 font-semibold mb-4",
+        id := "intro-banner"
       )("""
-         888                                        888
-         888                                        888
-         888                                        888
- .d8888b 88888b.  888d888 .d88b.  88888b.   .d88b.  888888 .d88b.  .d8888b
-d88P"    888 "88b 888P"  d88""88b 888 "88b d88""88b 888   d8P  Y8b 88K
-888      888  888 888    888  888 888  888 888  888 888   88888888 "Y8888b.
-Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
- "Y8888P 888  888 888     "Y88P"  888  888  "Y88P"   "Y888 "Y8888   88888P'
+      __                                   __                    
+     /\ \                                 /\ \__                 
+  ___\ \ \___   _ __   ___     ___     ___\ \ ,_\    __    ____  
+ /'___\ \  _ `\/\`'__\/ __`\ /' _ `\  / __`\ \ \/  /'__`\ /',__\ 
+/\ \__/\ \ \ \ \ \ \//\ \L\ \/\ \/\ \/\ \L\ \ \ \_/\  __//\__, `\
+\ \____\\ \_\ \_\ \_\\ \____/\ \_\ \_\ \____/\ \__\ \____\/\____/
+ \/____/ \/_/\/_/\/_/ \/___/  \/_/\/_/\/___/  \/__/\/____/\/___/
 """),
       p(
-        _class := "mx-auto text-xl font-semibold text-[#fabd2f]"
+        _class := "mx-auto text-xl font-semibold dark:text-cyan-300 text-cyan-800"
       )(
         "What is chronotes for?"
       ),
-      p(_class := "mx-auto text-[#d3869b]")(
+      p(_class := "mx-auto dark:text-amber-400 text-amber-900")(
         "Say you're following a checklist — such as for a software migration — and need to record each step along with a timestamp."
       ),
-      p(_class := "mx-auto text-[#83a598]")(
+      p(_class := "mx-auto dark:text-orange-500 text-orange-900")(
         "You could use chronotes to handle the timestamps automatically and simply copy the final list."
       ),
-      p(_class := "mx-auto text-[#bdae93] italic text-sm")(
+      p(_class := "mx-auto dark:text-gray-400 text-gray-800 italic text-sm")(
         "(yes, it's for a very small niche :D)"
       ),
       button(
-        _class := "bg-[#8ec07c] text-[#282828] mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
+        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
         onClick(Msg.UserRequestedSampleNotes)
       )(
         "show me some samples"
@@ -151,7 +176,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       ),
       div(_class := "flex gap-1 text-xs max-sm:text-sm")(
         button(
-          _class := s"px-2 py-1 bg-[#fe8019] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ${isDisabled}",
+          _class := s"px-2 py-1 dark:bg-blue-300 bg-blue-300 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor} ${isDisabled}",
           title := "edit note",
           disabled(isDisabled),
           onClick(
@@ -159,7 +184,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
           )
         )("~"),
         button(
-          _class := s"px-2 py-1 bg-[#fabd2f] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ",
+          _class := s"px-2 py-1 dark:bg-fuchsia-300 bg-purple-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor} ",
           title := "move timestamp backwards by a minute",
           disabled(isDisabled),
           onClick(
@@ -170,7 +195,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
           )
         )("<"),
         button(
-          _class := s"px-2 py-1 bg-[#83a598] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
+          _class := s"px-2 py-1 dark:bg-fuchsia-300 bg-purple-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor}",
           title := "move timestamp forwards by a minute",
           disabled(isDisabled),
           onClick(
@@ -181,7 +206,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
           )
         )(">"),
         button(
-          _class := s"px-2 py-1 bg-[#fb4934] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor}",
+          _class := s"px-2 py-1 dark:bg-red-500 bg-red-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor}",
           title := "delete note",
           disabled(isDisabled),
           onClick(Msg.UserRequestedNoteDeletion(index))
@@ -194,31 +219,31 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       recentlyCopied: Boolean
   ): Html[Msg] =
     val (buttonClass, buttonText) = recentlyCopied match {
-      case true  => ("bg-[#d3869b]", "copied!")
-      case false => ("bg-[#b8bb26]", "copy")
+      case true  => ("dark:bg-lime-300 bg-lime-600", "copied!")
+      case false => ("dark:bg-cyan-400 bg-blue-300", "copy")
     }
 
     if (notes.isEmpty) {
       div()
     } else {
       div(
-        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted border-[#928374] border-opacity-10"
+        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted dark:border-sky-400 border-sky-700 border-opacity-10 dark:bg-slate-900 bg-sky-100"
       )(
         div(_class := "flex gap-1 items-center")(
-          p(_class := "flex-1 text-lg text-[#ffffff]")("Notes"),
+          p(_class := "flex-1 text-lg")("Notes"),
           button(
-            _class := s"px-2 py-1 right-0 ${buttonClass} text-[#282828] font-semibold cursor-pointer",
+            _class := s"px-2 py-1 right-0 ${buttonClass} text-neutral-800 font-semibold cursor-pointer",
             title := "copy notes to clipboard",
             onClick(Msg.UserRequestedCopyToClipboard)
           )(buttonText),
           button(
-            _class := s"px-2 py-1 right-0 bg-[#fb4934] text-[#282828] font-semibold cursor-pointer",
+            _class := s"px-2 py-1 right-0 dark:bg-red-500 bg-red-400 text-neutral-800 font-semibold cursor-pointer",
             title := "reset",
             onClick(Msg.UserRequestedReset)
           )("reset")
         ),
         pre(
-          _class := "text-sm mt-4 text-[#ffffff] overflow-x-auto",
+          _class := "text-sm mt-4 overflow-x-auto",
           id     := "rendered-notes"
         )(
           notes.map(getNoteLine).mkString("\n")

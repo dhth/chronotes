@@ -13,17 +13,16 @@ object Chronotes extends TyrianIOApp[Msg, Model]:
     Routing.none(Msg.NoOp)
 
   def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
-    (Model.init(), Effects.loadUserTheme())
+    (
+      Model.init(),
+      Cmd.Batch(Effects.applyPreviousTheme, Effects.startSystemThemeTracking)
+    )
 
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) = Update.update(model)
 
   def view(model: Model): Html[Msg] =
-    val dark = model.theme match
-      case Theme.Light => ""
-      case Theme.Dark  => "dark"
-
     div(
-      className := s"${dark} bg-[#282828] text-[#fbf1c7]"
+      className := "dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-100 text-neutral-800"
     )(
       div(className := "w-4/5 max-sm:w-full max-sm:px-4 mx-auto")(
         View.mainSection(model)

@@ -11,7 +11,7 @@ lazy val chronotes =
     .settings(
       name         := "chronotes",
       version      := "0.1.0",
-      scalaVersion := "3.6.3",
+      scalaVersion := "3.7.0",
       organization := "store.handytools",
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "tyrian-io" % "0.13.0"

@@ -5,19 +5,27 @@ import scala.scalajs.js.Date
 val minute = 60 * 1000
 
 enum Theme:
-  case Light, Dark
+  case Dark
+  case Light
+  case System(dark: Option[Boolean])
 
-object Theme {
-  def display(theme: Theme): String =
-    theme match
-      case Light => "☀️"
-      case Dark  => "🌙"
+  def name: String =
+    this match
+      case Dark      => "dark"
+      case Light     => "light"
+      case System(_) => "system"
 
-  def getNext(theme: Theme): Theme =
-    theme match
-      case Theme.Light => Theme.Dark
-      case Theme.Dark  => Theme.Light
-}
+  def icon: String =
+    this match
+      case Dark      => "🌙"
+      case Light     => "☀️"
+      case System(_) => "🔁"
+
+  def next: Theme =
+    this match
+      case Dark      => Light
+      case Light     => System(None)
+      case System(_) => Dark
 
 final case class Model(
     currentNote: Option[PotentialNote],
@@ -66,8 +74,9 @@ object Model {
 }
 
 enum Msg:
-  case UserThemeLoaded(theme: Theme)
-  case UserThemeChanged
+  case PreviousThemeLoaded(theme: Theme)
+  case SystemThemeFetched(dark: Boolean)
+  case UserRequestedThemeChange
   case UserEnteredNoteBody(note: String)
   case UserSubmittedNewNote
   case NotePrepared(note: Note)
