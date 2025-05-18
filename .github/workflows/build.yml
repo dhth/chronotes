@@ -26,9 +26,9 @@ jobs:
           cache: sbt
       - uses: sbt/setup-sbt@v1
       - name: Build JS
-        run: sbt fastLinkJS
-      - uses: actions/setup-node@v4
+        run: sbt fullLinkJS
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: '.nvmrc'
-      - run: npm install
-      - run: npm run build
+          bun-version-file: ".bun-version"
+      - run: bun install
+      - run: bun run build
