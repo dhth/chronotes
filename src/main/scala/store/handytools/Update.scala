@@ -2,7 +2,6 @@ package store.handytools
 
 import tyrian.Cmd
 import cats.effect.IO
-import Extensions.*
 import scala.scalajs.js.Date
 import Effects.{copyToClipboard, focusElementById, getCurrentDate}
 import scala.concurrent.duration.DurationInt
@@ -25,7 +24,7 @@ object Update {
             case None =>
               (
                 model.copy(currentNote = None),
-                note.body |> Effects.getNoteWithCurrentTime
+                Effects.getNoteWithCurrentTime(note.body)
               )
             case Some(index) =>
               model.notes
@@ -83,7 +82,7 @@ object Update {
             currentNote =
               Some(PotentialNote(body = note.body, index = Some(index)))
           ),
-          "note-input" |> focusElementById
+          focusElementById("note-input")
         )
       }
 
@@ -92,7 +91,7 @@ object Update {
 
     case Msg.UserRequestedCopyToClipboard =>
       val notes = model.notes.map(getNoteLine).mkString("\n")
-      (model, notes |> copyToClipboard)
+      (model, copyToClipboard(notes))
 
     case Msg.CopyContentsAttempted(errored) =>
       errored match
@@ -105,11 +104,11 @@ object Update {
 
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
     case Msg.UserThemeChanged =>
-      (model.copy(theme = model.theme |> Theme.getNext), Cmd.None)
+      (model.copy(theme = Theme.getNext(model.theme)), Cmd.None)
     case Msg.UserRequestedSampleNotes =>
       (model, getCurrentDate())
     case Msg.CurrentTimeFetchedForSampleNotes(date) =>
-      (model.copy(notes = date |> sampleNotes), Cmd.None)
+      (model.copy(notes = sampleNotes(date)), Cmd.None)
     case Msg.UserRequestedReset =>
       (
         model.copy(
@@ -117,6 +116,6 @@ object Update {
           notes = Vector.empty,
           recentlyCopied = false
         ),
-        "note-input" |> focusElementById
+        focusElementById("note-input")
       )
 }

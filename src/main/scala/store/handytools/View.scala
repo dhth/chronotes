@@ -3,14 +3,13 @@ package store.handytools
 import tyrian.Html
 import tyrian.Html.*
 import tyrian.Empty
-import Extensions.*
 
 object View {
   def mainSection(model: Model): Html[Msg] =
     div(_class := "flex flex-col py-4 max-sm:min-h-screen sm:h-screen")(
       heading(),
-      model.currentNote |> notesInput,
-      model |> notesSection,
+      notesInput(model.currentNote),
+      notesSection(model),
       allNotes(model.notes, model.recentlyCopied)
     )
 
@@ -132,7 +131,7 @@ Y88b.    888  888 888    Y88..88P 888  888 Y88..88P Y88b. Y8b.          X88
       p(_class := "flex-1")(
         s"${note.timestamp.toLocaleTimeString}: ${note.body}"
       ),
-      div(_class := "flex gap-1 text-xs")(
+      div(_class := "flex gap-1 text-xs max-sm:text-sm")(
         button(
           _class := s"px-2 py-1 bg-[#fe8019] disabled:bg-[#928374] text-[#282828] font-semibold ${cursor} ${isDisabled}",
           title := "edit note",
