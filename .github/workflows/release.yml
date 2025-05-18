@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 env:
   JAVA_VERSION: '24'
@@ -25,16 +26,17 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           cache: sbt
       - uses: sbt/setup-sbt@v1
-      - name: Update path to target js file
-        run: |
-          sed -i '' 's|chronotes-fastopt|chronotes-opt|' src/main/html/chronotes.js
       - name: Build JS
         run: sbt fullLinkJS
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - run: npm install
-      - run: npm run build
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: ".bun-version"
+      - run: bun install
+      - run: bun run build
       - name: Update paths in index html file
         run: |
           sed -i '' 's|href="/|href="./|g' dist/index.html

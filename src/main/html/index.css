@@ -1,2 +1,9 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+#rendered-notes, #intro-banner {
+  font-family: "Fira Mono", monospace;
+}
