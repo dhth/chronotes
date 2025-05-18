@@ -7,11 +7,11 @@ import org.scalajs.dom.{document, window}
 import org.scalajs.dom.html
 
 object Effects {
-  def getNoteWithCurrentTime(input: String): Cmd[IO, Msg] =
+  def getNoteWithCurrentTime(index: Int, input: String): Cmd[IO, Msg] =
     val datetime = IO {
       new Date()
     }
-    Cmd.Run(datetime)(dt => Msg.NotePrepared(Note(input, dt)))
+    Cmd.Run(datetime)(dt => Msg.NotePrepared(Note(index, input, dt)))
 
   def copyToClipboard(text: String): Cmd[IO, Msg] =
     val clipboardIO = IO.fromPromise {

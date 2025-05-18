@@ -14,9 +14,12 @@ object View {
     )
 
   private def heading(): Html[Msg] =
-    div(_class := "flex gap-4 items-center")(
-      h1(_class := "flex-1 text-3xl font-semibold text-[#b8bb26]")(
+    div(_class := "flex gap-2 items-center")(
+      h1(_class := "text-3xl font-semibold text-[#b8bb26]")(
         "chronotes"
+      ),
+      p(_class := "text-sm font-semibold text-[#b8bb26]")(
+        "(wip)"
       )
     )
 
@@ -63,10 +66,24 @@ object View {
         noteEntry(model.currentNote.flatMap(_.index))
       )
 
+      val borderClass = if (model.orderingChanged) {
+        "border-[#fabd2f]"
+      } else {
+        "border-[#928374]"
+      }
+
       div(
-        _class := "flex-1 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
+        _class := s"flex-1 mt-4 border-2 border-dotted ${borderClass} border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto"
       )(
-        p(_class := "text-xl")("Entries"),
+        div(_class := "flex gap-2 items-center")(
+          p(_class := "text-xl")("Entries"),
+          model.orderingChanged match
+            case false => Empty
+            case true =>
+              p(_class := "text-sm text-[#fabd2f]")(
+                "(ordering changed)"
+              )
+        ),
         div(_class := "mt-4 md:flex-1 flex flex-col gap-6")(
           inputs*
         )
@@ -75,7 +92,7 @@ object View {
 
   private def introSection(): Html[Msg] =
     div(
-      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-2 overflow-x-auto md:overflow-y-auto"
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted border-[#928374] border-opacity-10 p-4 max-sm:p-4 overflow-x-auto md:overflow-y-auto"
     )(
       pre(
         _class := "mx-auto hidden sm:block text-[#b8bb26] mb-4",
