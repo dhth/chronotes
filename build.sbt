@@ -16,7 +16,7 @@ lazy val chronotes =
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "tyrian-io" % "0.13.0"
       ),
-      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+      scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
       scalafixOnCompile := true,
       semanticdbEnabled := true,
       semanticdbVersion := scalafixSemanticdb.revision,

@@ -1,17 +1,16 @@
 {
-  "source": "src/main/html/index.html",
+  "name": "chronotes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "start": "parcel --no-cache --dist-dir dist --log-level info",
-    "build": "parcel build --dist-dir dist --log-level verbose",
-    "clean": "rm -rf dist"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "parcel": "^2.1.0",
-    "postcss": "^8.5.3",
-    "process": "^0.11.10"
-  },
-  "dependencies": {
-    "tailwindcss": "^4.1.5",
-    "@tailwindcss/postcss": "^4.1.5"
+    "vite": "^6.3.5",
+    "@tailwindcss/vite": "^4.1.6",
+    "tailwindcss": "^4.1.6"
   }
 }
