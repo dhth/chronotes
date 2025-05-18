@@ -24,7 +24,8 @@ final case class Model(
     notes: Vector[Note],
     recentlyCopied: Boolean,
     theme: Theme,
-    orderingChanged: Boolean
+    movedNoteId: Option[Int],
+    numMovesInProgress: Int
 )
 
 final case class PotentialNote(
@@ -59,7 +60,8 @@ object Model {
       notes = Vector.empty,
       recentlyCopied = false,
       theme = Theme.Dark,
-      orderingChanged = false
+      movedNoteId = None,
+      numMovesInProgress = 0
     )
 }
 
@@ -82,6 +84,5 @@ enum Msg:
   case UserRequestedSampleNotes
   case CurrentTimeFetchedForSampleNotes(date: Date)
   case UserRequestedReset
-  case NoteOrderingChanged
   case ResetNoteOrderingFlash
   case NoOp
