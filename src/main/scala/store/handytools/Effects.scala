@@ -19,7 +19,7 @@ object Effects {
         Clipboard
           .writeText(text)
           .`then`[Msg](_ => Msg.CopyContentsAttempted(errored = false))
-          .`catch`[Msg](err => Msg.CopyContentsAttempted(errored = true))
+          .`catch`[Msg](_ => Msg.CopyContentsAttempted(errored = true))
       }
     }
 
