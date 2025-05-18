@@ -71,8 +71,11 @@ object Update {
                   + delta
               )
             )
+        val updatesNotes = model.notes
+          .updated(index, updatedNote)
+          .sortWith((a, b) => a.timestamp.getTime() < b.timestamp.getTime())
 
-        (model.copy(notes = model.notes.updated(index, updatedNote)), Cmd.None)
+        (model.copy(notes = updatesNotes), Cmd.None)
       }
 
     case Msg.UserRequestedToEditNote(index) =>
