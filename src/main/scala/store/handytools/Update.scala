@@ -75,13 +75,18 @@ object Update {
           .updated(index, updatedNote)
           .sortWith((a, b) => a.timestamp.getTime() < b.timestamp.getTime())
 
-        val effect = if (updatesNotes.map(_.id) == model.notes.map(_.id)) {
-          Cmd.None
+        if (updatesNotes.map(_.id) == model.notes.map(_.id)) {
+          (model.copy(notes = updatesNotes), Cmd.None)
         } else {
-          Cmd.emit(Msg.NoteOrderingChanged)
+          (
+            model.copy(
+              notes = updatesNotes,
+              movedNoteId = Some(note.id),
+              numMovesInProgress = model.numMovesInProgress + 1
+            ),
+            Cmd.emitAfterDelay(Msg.ResetNoteOrderingFlash, 1.second)
+          )
         }
-
-        (model.copy(notes = updatesNotes), effect)
       }
 
     case Msg.UserRequestedToEditNote(index) =>
@@ -132,15 +137,13 @@ object Update {
         focusElementById("note-input")
       )
 
-    case Msg.NoteOrderingChanged =>
-      model.orderingChanged match
-        case false =>
-          (
-            model.copy(orderingChanged = true),
-            Cmd.emitAfterDelay(Msg.ResetNoteOrderingFlash, 2.second)
-          )
-        case true => (model, Cmd.None)
-
     case Msg.ResetNoteOrderingFlash =>
-      (model.copy(orderingChanged = false), Cmd.None)
+      (
+        model.numMovesInProgress match {
+          case n if n <= 1 =>
+            model.copy(movedNoteId = None, numMovesInProgress = 0)
+          case n => model.copy(numMovesInProgress = n - 1)
+        },
+        Cmd.None
+      )
 }
