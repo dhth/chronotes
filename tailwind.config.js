@@ -1,7 +1,4 @@
 module.exports = {
-  content: ["./src/**/*.{html,scala}"],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+	content: ["./index.html", "./src/**/*.scala"],
+	plugins: [],
 };

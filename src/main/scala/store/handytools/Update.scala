@@ -8,7 +8,20 @@ import scala.concurrent.duration.DurationInt
 
 object Update {
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) =
-    case Msg.UserThemeLoaded(theme) => (model.copy(theme = theme), Cmd.None)
+    case Msg.PreviousThemeLoaded(theme) => (model.copy(theme = theme), Cmd.None)
+
+    case Msg.SystemThemeFetched(isSystemThemeDark) =>
+      (model.copy(theme = Theme.System(Some(isSystemThemeDark))), Cmd.None)
+
+    case Msg.UserRequestedThemeChange =>
+      val nextTheme = model.theme.next
+
+      val effect = nextTheme match {
+        case Theme.Manual(variant) => Effects.setManualTheme(variant)
+        case Theme.System(_)       => Effects.setSystemTheme
+      }
+
+      (model.copy(theme = nextTheme), effect)
 
     case Msg.UserEnteredNoteBody(body) =>
       val current_note = model.currentNote match
@@ -57,9 +70,9 @@ object Update {
         )
       }
 
-    case Msg.UserRequestedTimeStampBeUpdated(index, change_type) =>
+    case Msg.UserRequestedTimeStampBeUpdated(index, changeType) =>
       model.notes.lift(index).fold((model, Cmd.None)) { note =>
-        val delta = change_type match
+        val delta = changeType match
           case TimestampUpdateType.PushBehind  => -1 * 60 * 1000
           case TimestampUpdateType.PushForward => 60 * 1000
 
@@ -117,9 +130,6 @@ object Update {
           )
 
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
-
-    case Msg.UserThemeChanged =>
-      (model.copy(theme = Theme.getNext(model.theme)), Cmd.None)
 
     case Msg.UserRequestedSampleNotes =>
       (model, getCurrentDate())

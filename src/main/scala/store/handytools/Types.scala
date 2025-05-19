@@ -4,20 +4,42 @@ import scala.scalajs.js.Date
 
 val minute = 60 * 1000
 
-enum Theme:
-  case Light, Dark
+enum ManualTheme:
+  case Dark
+  case Light
 
-object Theme {
-  def display(theme: Theme): String =
-    theme match
-      case Light => "☀️"
+  def name: String =
+    this match
+      case Dark  => "dark"
+      case Light => "light"
+
+  def icon: String =
+    this match
       case Dark  => "🌙"
+      case Light => "☀️"
 
-  def getNext(theme: Theme): Theme =
-    theme match
-      case Theme.Light => Theme.Dark
-      case Theme.Dark  => Theme.Light
-}
+enum Theme:
+  case Manual(variant: ManualTheme)
+  case System(dark: Option[Boolean])
+
+  def name: String =
+    this match
+      case Manual(variant) => variant.name
+      case System(_)       => "system"
+
+  def icon: String =
+    this match
+      case Manual(variant) => variant.icon
+      case System(_)       => "🔁"
+
+  def next: Theme =
+    this match
+      case Manual(variant) =>
+        variant match
+          case ManualTheme.Dark  => Manual(variant = ManualTheme.Light)
+          case ManualTheme.Light => System(dark = None)
+
+      case System(_) => Manual(variant = ManualTheme.Dark)
 
 final case class Model(
     currentNote: Option[PotentialNote],
@@ -59,22 +81,23 @@ object Model {
       currentNote = None,
       notes = Vector.empty,
       recentlyCopied = false,
-      theme = Theme.Dark,
+      theme = Theme.System(dark = None),
       movedNoteId = None,
       numMovesInProgress = 0
     )
 }
 
 enum Msg:
-  case UserThemeLoaded(theme: Theme)
-  case UserThemeChanged
+  case PreviousThemeLoaded(theme: Theme)
+  case SystemThemeFetched(dark: Boolean)
+  case UserRequestedThemeChange
   case UserEnteredNoteBody(note: String)
   case UserSubmittedNewNote
   case NotePrepared(note: Note)
   case UserRequestedNoteDeletion(index: Int)
   case UserRequestedTimeStampBeUpdated(
       index: Int,
-      change_type: TimestampUpdateType
+      changeType: TimestampUpdateType
   )
   case UserRequestedToEditNote(index: Int)
   case UserRequestedEditCancellation
