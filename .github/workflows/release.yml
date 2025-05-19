@@ -5,64 +5,24 @@ on:
     branches:
       - main
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  JAVA_VERSION: '24'
-
 jobs:
   deploy-staging:
-    runs-on: macos-latest
     concurrency:
       group: deploy-staging
     environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: ".bun-version"
-      - name: Install Vercel CLI
-        run: bun install --global vercel
-      - name: Pull Vercel environment info
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Setup java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: sbt
-      - uses: sbt/setup-sbt@v1
-      - name: Build JS
-        run: sbt fullLinkJS
-      - run: bun install
-      - run: bun run build
-      - name: Deploy to Vercel
-        run: vercel deploy --target=preview dist --token=${{ secrets.VERCEL_TOKEN }} --yes
+    uses: ./.github/workflows/deploy-on-vercel.yml
+    with:
+      environment: preview
+      java_version: '24'
+    secrets: inherit
 
   deploy-prod:
-    runs-on: macos-latest
+    needs: [deploy-staging]
     concurrency:
       group: deploy-prod
     environment: prod
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version-file: ".bun-version"
-      - name: Install Vercel CLI
-        run: bun install --global vercel
-      - name: Pull Vercel environment info
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Setup java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: sbt
-      - uses: sbt/setup-sbt@v1
-      - name: Build JS
-        run: sbt fullLinkJS
-      - run: bun install
-      - run: bun run build
-      - name: Deploy to Vercel
-        run: vercel deploy --target=production dist --token=${{ secrets.VERCEL_TOKEN }} --yes
+    uses: ./.github/workflows/deploy-on-vercel.yml
+    with:
+      environment: production
+      java_version: '24'
+    secrets: inherit
