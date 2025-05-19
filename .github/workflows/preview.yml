@@ -4,10 +4,20 @@ on:
     branches-ignore:
       - main
 
+env:
+  JAVA_VERSION: '24'
+
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-on-vercel.yml
-    with:
-      environment: preview
-      java_version: '24'
-    secrets: inherit
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy-on-vercel
+        with:
+          environment: preview
+          java_version: ${{ env.JAVA_VERSION }}
+          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}

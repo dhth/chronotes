@@ -1,0 +1,55 @@
+name: deploy-on-vercel
+
+inputs:
+  environment:
+    description: 'Environment'
+    required: true
+  java_version:
+    description: 'Java version'
+    required: true
+  vercel_org_id:
+    description: 'Vercel org ID'
+    required: true
+  vercel_project_id:
+    description: 'Vercel project ID'
+    required: true
+  vercel_token:
+    description: 'Vercel token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: ".bun-version"
+    - name: Install Vercel CLI
+      shell: bash
+      run: bun install --global vercel
+    - name: Pull Vercel environment info
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.vercel_org_id }}
+        VERCEL_PROJECT_ID: ${{ inputs.vercel_project_id }}
+      run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.vercel_token }}
+    - name: Setup java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java_version }}
+        cache: sbt
+    - uses: sbt/setup-sbt@v1
+    - name: Build JS
+      shell: bash
+      run: sbt fullLinkJS
+    - name: build
+      shell: bash
+      run: |
+        bun install
+        bun run build
+    - name: Deploy to Vercel
+      shell: bash
+      env:
+        VERCEL_ORG_ID: ${{ inputs.vercel_org_id }}
+        VERCEL_PROJECT_ID: ${{ inputs.vercel_project_id }}
+      run: vercel deploy --target=${{ inputs.environment }} dist --token=${{ inputs.vercel_token }} --yes
