@@ -1,0 +1,22 @@
+name: deploy-on-vercel
+
+inputs:
+  environment:
+    description: 'Environment'
+    required: true
+  java_version:
+    description: 'Java version'
+    required: true
+  some_token:
+    description: 'Some token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Test
+      shell: bash
+      env:
+        SOME_TOKEN: ${{ inputs.some_token }}
+      run: |
+        echo 'token: ${SOME_TOKEN}'

@@ -4,10 +4,18 @@ on:
     branches-ignore:
       - main
 
+env:
+  JAVA_VERSION: '24'
+
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-on-vercel.yml
-    with:
-      environment: preview
-      java_version: '24'
-    secrets: inherit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Release and Publish
+        id: release
+        uses: ./.github/actions/deploy-on-vercel
+        with:
+          environment: preview
+          java_version: ${{ env.JAVA_VERSION }}
+          some_token: ${{ secrets.SOME_TOKEN }}
