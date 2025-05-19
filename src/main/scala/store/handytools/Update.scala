@@ -17,8 +17,8 @@ object Update {
       val nextTheme = model.theme.next
 
       val effect = nextTheme match {
-        case Theme.Dark | Theme.Light => Effects.setManualTheme(nextTheme)
-        case Theme.System(_)          => Effects.setSystemTheme
+        case Theme.Manual(variant) => Effects.setManualTheme(variant)
+        case Theme.System(_)       => Effects.setSystemTheme
       }
 
       (model.copy(theme = nextTheme), effect)

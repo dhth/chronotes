@@ -4,28 +4,42 @@ import scala.scalajs.js.Date
 
 val minute = 60 * 1000
 
-enum Theme:
+enum ManualTheme:
   case Dark
   case Light
+
+  def name: String =
+    this match
+      case Dark  => "dark"
+      case Light => "light"
+
+  def icon: String =
+    this match
+      case Dark  => "🌙"
+      case Light => "☀️"
+
+enum Theme:
+  case Manual(variant: ManualTheme)
   case System(dark: Option[Boolean])
 
   def name: String =
     this match
-      case Dark      => "dark"
-      case Light     => "light"
-      case System(_) => "system"
+      case Manual(variant) => variant.name
+      case System(_)       => "system"
 
   def icon: String =
     this match
-      case Dark      => "🌙"
-      case Light     => "☀️"
-      case System(_) => "🔁"
+      case Manual(variant) => variant.icon
+      case System(_)       => "🔁"
 
   def next: Theme =
     this match
-      case Dark      => Light
-      case Light     => System(None)
-      case System(_) => Dark
+      case Manual(variant) =>
+        variant match
+          case ManualTheme.Dark  => Manual(variant = ManualTheme.Light)
+          case ManualTheme.Light => System(dark = None)
+
+      case System(_) => Manual(variant = ManualTheme.Dark)
 
 final case class Model(
     currentNote: Option[PotentialNote],
@@ -67,7 +81,7 @@ object Model {
       currentNote = None,
       notes = Vector.empty,
       recentlyCopied = false,
-      theme = Theme.Dark,
+      theme = Theme.System(dark = None),
       movedNoteId = None,
       numMovesInProgress = 0
     )

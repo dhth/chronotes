@@ -3,6 +3,7 @@ package store.handytools
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 import org.scalajs.dom.{document, window}
+import ManualTheme.*
 
 @js.native
 @JSGlobal("navigator.clipboard")
@@ -12,7 +13,7 @@ object Clipboard extends js.Object {
 }
 
 object ThemeOps {
-  def setManualTheme(theme: Theme): Unit = {
+  def setManualTheme(theme: ManualTheme): Unit = {
     window.localStorage.setItem("theme", theme.name)
     document.documentElement.setAttribute("data-theme", theme.name)
   }
@@ -24,10 +25,10 @@ object ThemeOps {
       .matches
     isSystemThemeDark match {
       case true =>
-        setTheme(Theme.Dark)
+        setTheme(Dark)
 
       case false =>
-        setTheme(Theme.Light)
+        setTheme(Light)
     }
     isSystemThemeDark
   }
@@ -37,15 +38,15 @@ object ThemeOps {
 
     storedTheme match {
       case Some("dark") =>
-        setTheme(Theme.Dark)
-        Theme.Dark
+        setTheme(Dark)
+        Theme.Manual(variant = Dark)
 
       case Some("light") =>
-        setTheme(Theme.Light)
-        Theme.Light
+        setTheme(Light)
+        Theme.Manual(variant = Light)
 
       case Some(_) =>
-        setTheme(Theme.Dark)
+        setTheme(Dark)
         Theme.System(dark = Some(true))
 
       case None =>
@@ -54,16 +55,16 @@ object ThemeOps {
           .matches
         isSystemThemeDark match {
           case true =>
-            setTheme(Theme.Dark)
+            setTheme(Dark)
 
           case false =>
-            setTheme(Theme.Light)
+            setTheme(Light)
         }
         Theme.System(dark = Some(isSystemThemeDark))
     }
   }
 
-  def setTheme(theme: Theme): Unit =
+  def setTheme(theme: ManualTheme): Unit =
     document.documentElement.setAttribute(
       "data-theme",
       theme.name

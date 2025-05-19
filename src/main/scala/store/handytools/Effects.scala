@@ -6,6 +6,7 @@ import scala.scalajs.js.Date
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
+import ManualTheme.*
 
 object Effects {
   def getNoteWithCurrentTime(index: Int, input: String): Cmd[IO, Msg] =
@@ -38,7 +39,7 @@ object Effects {
     }
     Cmd.Run(io)(Msg.CurrentTimeFetchedForSampleNotes(_))
 
-  def setManualTheme(theme: Theme): Cmd[IO, Nothing] =
+  def setManualTheme(theme: ManualTheme): Cmd[IO, Nothing] =
     Cmd.SideEffect(
       ThemeOps.setManualTheme(theme)
     )
@@ -71,9 +72,9 @@ object Effects {
                 .matches
 
               if (isSystemThemeDark) {
-                ThemeOps.setTheme(Theme.Dark)
+                ThemeOps.setTheme(Dark)
               } else {
-                ThemeOps.setTheme(Theme.Light)
+                ThemeOps.setTheme(Light)
               }
               Cmd.Emit(Msg.SystemThemeFetched(isSystemThemeDark))
             } else {
