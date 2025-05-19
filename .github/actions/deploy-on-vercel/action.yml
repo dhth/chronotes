@@ -19,4 +19,4 @@ runs:
       env:
         SOME_TOKEN: ${{ inputs.some_token }}
       run: |
-        echo 'token: ${SOME_TOKEN}'
+        echo "token: ${SOME_TOKEN}"
