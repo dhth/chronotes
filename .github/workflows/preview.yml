@@ -20,4 +20,4 @@ jobs:
           java_version: ${{ env.JAVA_VERSION }}
           vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}
           vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel_token: ${{ secrets.SOME_TOKEN }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
