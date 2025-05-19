@@ -68,25 +68,4 @@ object ThemeOps {
       "data-theme",
       theme.name
     )
-
-  def trackSystemTheme(cb: (Boolean) => Unit): Unit =
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener(
-        "change",
-        _ =>
-          if (Option(window.localStorage.getItem("theme")).isEmpty) { // this ensures we only change the theme when "auto" mode is ON
-            val isSystemThemeDark = window
-              .matchMedia("(prefers-color-scheme: dark)")
-              .matches
-
-            if (isSystemThemeDark) {
-              setTheme(Theme.Dark)
-            } else {
-              setTheme(Theme.Light)
-            }
-            cb(isSystemThemeDark)
-
-          }
-      )
 }

@@ -83,7 +83,7 @@ enum Msg:
   case UserRequestedNoteDeletion(index: Int)
   case UserRequestedTimeStampBeUpdated(
       index: Int,
-      change_type: TimestampUpdateType
+      changeType: TimestampUpdateType
   )
   case UserRequestedToEditNote(index: Int)
   case UserRequestedEditCancellation

@@ -38,34 +38,38 @@ object View {
     s"using ${theme.name} theme; click to switch to ${theme.next.name}"
 
   private def notesInput(note: Option[PotentialNote]): Html[Msg] =
-    val (verb, inputBorderClass, buttonBgClass) = note.flatMap(_.index) match
+    val (verb, inputOutlineClass, buttonBgClass) = note.flatMap(_.index) match
       case None =>
         (
           "add",
-          "dark:outline-gray-500 outline-slate-400 dark:focus:outline-blue-400 focus:outline-blue-700",
-          "bg-blue-300 text-neutral-800"
+          "dark:focus:outline-blue-400 focus:outline-blue-700",
+          "dark:bg-blue-400 bg-blue-300"
         )
-      case Some(_) => ("update", "focus:outline-[#fe8019]", "bg-[#fe8019]")
+      case Some(_) =>
+        (
+          "update",
+          "dark:focus:outline-orange-500 focus:outline-orange-400",
+          "dark:bg-orange-500 bg-orange-400"
+        )
 
-    div(_class := "mt-6")(
+    div(_class := "mt-4")(
       p(_class := "font-semibold")(
         s"Type note entry and press enter or click \"${verb}\""
       ),
       form(_class := "flex gap-2 max-sm:gap-1 items-center mt-2")(
         input(
-          _class := s"flex-1 outline-2 ${inputBorderClass} h-10 max-sm:h-8 p-2",
-          id     := "note-input",
+          _class := s"flex-1 outline-2 ${inputOutlineClass} dark:outline-gray-400 outline-slate-500 h-10 max-sm:h-8 p-2",
+          id           := "note-input",
           autoComplete := "off",
           attribute("data-1p-ignore", ""),
           value := note.map(_.body).getOrElse(""),
           onInput(Msg.UserEnteredNoteBody(_))
         ),
         button(
-          _class := List(
-            s"${buttonBgClass} text-neutral-800 dark:disabled:bg-neutral-500",
-            "disabled:bg-gray-400 dark:bg-blue-400 bg-blue-300",
-            "text-lg p-2 font-semibold cursor-pointer max-sm:text-sm"
-          ).mkString(" "),
+          _class :=
+            s"${buttonBgClass} text-neutral-800 "
+              ++ "dark:disabled:bg-neutral-500 disabled:bg-gray-400 text-lg p-2 font-bold "
+              ++ "cursor-pointer max-sm:text-sm",
           disabled(note.map(_.body.isEmpty).getOrElse(true)),
           onClick(Msg.UserSubmittedNewNote)
         )(
@@ -77,7 +81,7 @@ object View {
             button(
               _class := List(
                 "dark:bg-rose-500 bg-rose-400 text-neutral-800",
-                "text-lg p-2 font-semibold cursor-pointer max-sm:text-sm"
+                "text-lg p-2 font-bold cursor-pointer max-sm:text-sm"
               ).mkString(" "),
               onClick(Msg.UserRequestedEditCancellation)
             )("cancel")
@@ -103,7 +107,7 @@ object View {
         div(_class := "flex gap-2 items-center")(
           p(_class := "text-xl")("Entries")
         ),
-        div(_class := "mt-4 md:flex-1 flex flex-col gap-6")(
+        div(_class := "mt-4 md:flex-1 flex flex-col gap-4")(
           inputs*
         )
       )
@@ -140,7 +144,7 @@ object View {
         "(yes, it's for a very small niche :D)"
       ),
       button(
-        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
+        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-bold cursor-pointer",
         onClick(Msg.UserRequestedSampleNotes)
       )(
         "show me some samples"
@@ -163,7 +167,7 @@ object View {
     val movedClass = if (recentlyMoved) {
       " text-[#fabd2f] font-bold"
     } else {
-      ""
+      "font-semibold"
     }
 
     div(
@@ -176,7 +180,7 @@ object View {
       ),
       div(_class := "flex gap-1 text-xs max-sm:text-sm")(
         button(
-          _class := s"px-2 py-1 dark:bg-blue-300 bg-blue-300 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor} ${isDisabled}",
+          _class := s"px-2 py-1 dark:bg-lime-400 bg-lime-400 disabled:bg-gray-400 text-neutral-800 font-bold ${cursor} ${isDisabled}",
           title := "edit note",
           disabled(isDisabled),
           onClick(
@@ -184,7 +188,7 @@ object View {
           )
         )("~"),
         button(
-          _class := s"px-2 py-1 dark:bg-fuchsia-300 bg-purple-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor} ",
+          _class := s"px-2 py-1 dark:bg-teal-400 bg-teal-300 disabled:bg-gray-400 text-neutral-800 font-bold ${cursor} ",
           title := "move timestamp backwards by a minute",
           disabled(isDisabled),
           onClick(
@@ -195,7 +199,7 @@ object View {
           )
         )("<"),
         button(
-          _class := s"px-2 py-1 dark:bg-fuchsia-300 bg-purple-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor}",
+          _class := s"px-2 py-1 dark:bg-teal-400 bg-teal-300 disabled:bg-gray-400 text-neutral-800 font-bold ${cursor}",
           title := "move timestamp forwards by a minute",
           disabled(isDisabled),
           onClick(
@@ -206,7 +210,7 @@ object View {
           )
         )(">"),
         button(
-          _class := s"px-2 py-1 dark:bg-red-500 bg-red-400 disabled:bg-gray-400 text-neutral-800 font-semibold ${cursor}",
+          _class := s"px-2 py-1 dark:bg-rose-500 bg-rose-300 disabled:bg-gray-400 text-neutral-800 font-bold ${cursor}",
           title := "delete note",
           disabled(isDisabled),
           onClick(Msg.UserRequestedNoteDeletion(index))
@@ -227,17 +231,18 @@ object View {
       div()
     } else {
       div(
-        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted dark:border-sky-400 border-sky-700 border-opacity-10 dark:bg-slate-900 bg-sky-100"
+        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted "
+          ++ "dark:border-sky-400 border-sky-700 border-opacity-10 dark:bg-slate-900 bg-sky-100"
       )(
         div(_class := "flex gap-1 items-center")(
           p(_class := "flex-1 text-lg")("Notes"),
           button(
-            _class := s"px-2 py-1 right-0 ${buttonClass} text-neutral-800 font-semibold cursor-pointer",
+            _class := s"px-2 py-1 right-0 ${buttonClass} text-neutral-800 font-bold cursor-pointer",
             title := "copy notes to clipboard",
             onClick(Msg.UserRequestedCopyToClipboard)
           )(buttonText),
           button(
-            _class := s"px-2 py-1 right-0 dark:bg-red-500 bg-red-400 text-neutral-800 font-semibold cursor-pointer",
+            _class := s"px-2 py-1 right-0 dark:bg-red-500 bg-red-400 text-neutral-800 font-bold cursor-pointer",
             title := "reset",
             onClick(Msg.UserRequestedReset)
           )("reset")

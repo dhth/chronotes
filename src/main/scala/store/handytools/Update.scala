@@ -70,9 +70,9 @@ object Update {
         )
       }
 
-    case Msg.UserRequestedTimeStampBeUpdated(index, change_type) =>
+    case Msg.UserRequestedTimeStampBeUpdated(index, changeType) =>
       model.notes.lift(index).fold((model, Cmd.None)) { note =>
-        val delta = change_type match
+        val delta = changeType match
           case TimestampUpdateType.PushBehind  => -1 * 60 * 1000
           case TimestampUpdateType.PushForward => 60 * 1000
 
