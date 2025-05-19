@@ -24,8 +24,10 @@ runs:
       with:
         bun-version-file: ".bun-version"
     - name: Install Vercel CLI
+      shell: bash
       run: bun install --global vercel
     - name: Pull Vercel environment info
+      shell: bash
       env:
         VERCEL_ORG_ID: ${{ inputs.vercel_org_id }}
         VERCEL_PROJECT_ID: ${{ inputs.vercel_project_id }}
@@ -38,10 +40,15 @@ runs:
         cache: sbt
     - uses: sbt/setup-sbt@v1
     - name: Build JS
+      shell: bash
       run: sbt fullLinkJS
-    - run: bun install
-    - run: bun run build
+    - name: build
+      shell: bash
+      run: |
+        bun install
+        bun run build
     - name: Deploy to Vercel
+      shell: bash
       env:
         VERCEL_ORG_ID: ${{ inputs.vercel_org_id }}
         VERCEL_PROJECT_ID: ${{ inputs.vercel_project_id }}
