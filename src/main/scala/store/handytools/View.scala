@@ -142,17 +142,17 @@ object View {
       )(
         "What is chronotes for?"
       ),
-      p(_class := "mx-auto dark:text-amber-400 text-amber-900")(
+      p(_class := "mx-auto dark:text-amber-400 text-rose-900")(
         "Say you're following a checklist — such as for a software migration — and need to record each step along with a timestamp."
       ),
-      p(_class := "mx-auto dark:text-orange-500 text-orange-900")(
+      p(_class := "mx-auto dark:text-orange-500 text-rose-700")(
         "You could use chronotes to handle the timestamps automatically and simply copy the final list."
       ),
       p(_class := "mx-auto dark:text-gray-400 text-gray-800 italic text-sm")(
         "(yes, it's for a very small niche :D)"
       ),
       button(
-        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
+        _class := "dark:bg-cyan-400 bg-blue-300 text-neutral-800 mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
         onClick(Msg.UserRequestedSampleNotes)
       )(
         "show me some samples"
@@ -173,7 +173,7 @@ object View {
     }
 
     val movedClass = if (recentlyMoved) {
-      " text-[#fabd2f] font-bold"
+      "dark:text-orange-300 text-red-500 font-bold"
     } else {
       "font-semibold"
     }
@@ -182,7 +182,7 @@ object View {
       _class := "flex flex-col gap-2 items-left"
     )(
       p(
-        _class := s"flex-1${movedClass}"
+        _class := s"flex-1 ${movedClass}"
       )(
         s"${note.timestamp.toLocaleTimeString}: ${note.body}"
       ),
