@@ -68,7 +68,7 @@ object View {
         button(
           _class :=
             s"${buttonBgClass} text-neutral-800 "
-              ++ "dark:disabled:bg-neutral-500 disabled:bg-gray-400 text-lg p-2 font-bold "
+              ++ "dark:disabled:bg-neutral-400 disabled:bg-neutral-300 text-lg p-2 font-bold "
               ++ "cursor-pointer max-sm:text-sm",
           disabled(note.map(_.body.isEmpty).getOrElse(true)),
           onClick(Msg.UserSubmittedNewNote)
@@ -102,10 +102,16 @@ object View {
       )
 
       div(
-        _class := s"flex-1 mt-4 border-2 border-dotted dark:border-blue-400 border-blue-600 border-opacity-10 p-4 max-sm:p-2 md:overflow-y-auto dark:bg-slate-800 bg-blue-100"
+        _class := "flex-1 mt-4 border-2 border-dotted dark:border-blue-400 border-blue-600 "
+          ++ "border-opacity-10 p-4 md:overflow-y-auto dark:bg-slate-800 bg-blue-100"
       )(
         div(_class := "flex gap-2 items-center")(
-          p(_class := "text-xl")("Entries")
+          p(_class := "flex-1 text-xl")("Entries"),
+          button(
+            _class := s"px-2 py-1 right-0 dark:bg-red-500 bg-red-400 text-neutral-800 font-bold cursor-pointer",
+            title := "reset",
+            onClick(Msg.UserRequestedReset)
+          )("reset")
         ),
         div(_class := "mt-4 md:flex-1 flex flex-col gap-4")(
           inputs*
@@ -115,7 +121,9 @@ object View {
 
   private def introSection(): Html[Msg] =
     div(
-      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted dark:border-blue-400 border-blue-700 p-8 max-sm:p-4 overflow-x-auto md:overflow-y-auto dark:bg-slate-800 bg-blue-100"
+      _class := "flex flex-col gap-4 mt-4 border-2 border-dotted dark:border-blue-400 "
+        ++ "border-blue-700 p-8 max-sm:p-4 overflow-x-auto md:overflow-y-auto "
+        ++ "dark:bg-slate-800 bg-blue-100"
     )(
       pre(
         _class := "mx-auto hidden sm:block dark:text-blue-400 text-blue-800 font-semibold mb-4",
@@ -144,7 +152,7 @@ object View {
         "(yes, it's for a very small niche :D)"
       ),
       button(
-        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-bold cursor-pointer",
+        _class := "dark:bg-cyan-400 bg-blue-300 text-[#282828] mx-auto mt-4 px-4 py-1 font-semibold cursor-pointer",
         onClick(Msg.UserRequestedSampleNotes)
       )(
         "show me some samples"
@@ -223,29 +231,24 @@ object View {
       recentlyCopied: Boolean
   ): Html[Msg] =
     val (buttonClass, buttonText) = recentlyCopied match {
-      case true  => ("dark:bg-lime-300 bg-lime-600", "copied!")
-      case false => ("dark:bg-cyan-400 bg-blue-300", "copy")
+      case true  => ("dark:bg-lime-300 bg-lime-400", "copied!")
+      case false => ("dark:bg-sky-300 bg-sky-300", "copy")
     }
 
     if (notes.isEmpty) {
       div()
     } else {
       div(
-        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 max-sm:p-2 border-2 border-dotted "
-          ++ "dark:border-sky-400 border-sky-700 border-opacity-10 dark:bg-slate-900 bg-sky-100"
+        _class := "mt-4 md:h-1/3 md:overflow-y-auto p-4 border-2 border-dotted dark:border-sky-400 "
+          ++ "border-sky-700 border-opacity-10 dark:bg-slate-900 bg-sky-100"
       )(
-        div(_class := "flex gap-1 items-center")(
+        div(_class := "flex gap-2 items-center")(
           p(_class := "flex-1 text-lg")("Notes"),
           button(
             _class := s"px-2 py-1 right-0 ${buttonClass} text-neutral-800 font-bold cursor-pointer",
             title := "copy notes to clipboard",
             onClick(Msg.UserRequestedCopyToClipboard)
-          )(buttonText),
-          button(
-            _class := s"px-2 py-1 right-0 dark:bg-red-500 bg-red-400 text-neutral-800 font-bold cursor-pointer",
-            title := "reset",
-            onClick(Msg.UserRequestedReset)
-          )("reset")
+          )(buttonText)
         ),
         pre(
           _class := "text-sm mt-4 overflow-x-auto",
