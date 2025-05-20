@@ -33,7 +33,7 @@ object Effects {
         .foreach(_.focus())
     )
 
-  def getCurrentDate(): Cmd[IO, Msg] =
+  def getCurrentDate: Cmd[IO, Msg] =
     val io = IO {
       new Date()
     }
@@ -83,4 +83,21 @@ object Effects {
         )
     }
     Cmd.SideEffect(io)
+
+  def saveNotesToStorage(notes: Vector[Note]): Cmd[IO, Nothing] =
+    Cmd.SideEffect(
+      Storage.storeNotes(notes)
+    )
+
+  def removeNotesFromStorage: Cmd[IO, Nothing] =
+    Cmd.SideEffect(
+      Storage.removeNotes
+    )
+
+  def loadPreviousNotesFromStorage: Cmd[IO, Msg] =
+    val io = IO {
+      Storage.getNotes
+    }
+
+    Cmd.Run(io)(Msg.PreviousNotesFetched(_))
 }

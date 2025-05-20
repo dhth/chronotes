@@ -1,6 +1,7 @@
 package store.handytools
 
 import scala.scalajs.js.Date
+import io.circe.{Encoder, Decoder, Json, HCursor, DecodingFailure}
 
 val minute = 60 * 1000
 
@@ -57,6 +58,36 @@ final case class PotentialNote(
 
 final case class Note(id: Int, body: String, timestamp: Date)
 
+object Note {
+  extension (notes: Vector[Note])
+    def sortByTimestamp: Vector[Note] =
+      notes.sortWith((a, b) => a.timestamp.getTime() < b.timestamp.getTime())
+}
+
+object DateCodecs {
+  given Encoder[Date] with
+    def apply(date: Date): Json =
+      Json.fromString(date.toISOString())
+
+  given Decoder[Date] with
+    def apply(c: HCursor): Decoder.Result[Date] =
+      c.value.asString match
+        case Some(s) =>
+          val date = new Date(s)
+          if (date.getTime().isNaN) {
+            Left(DecodingFailure(s"invalid date string: ${s}", c.history))
+          } else {
+            Right(date)
+          }
+        case None =>
+          Left(
+            DecodingFailure(
+              "expected a string value representing a date",
+              c.history
+            )
+          )
+}
+
 def sampleNotes(baseLineDate: Date): Vector[Note] =
   val startDate = new Date(baseLineDate.getTime - minute * 201)
   Vector(
@@ -90,9 +121,10 @@ object Model {
 enum Msg:
   case PreviousThemeLoaded(theme: Theme)
   case SystemThemeFetched(dark: Boolean)
+  case PreviousNotesFetched(notes: Vector[Note])
   case UserRequestedThemeChange
   case UserEnteredNoteBody(note: String)
-  case UserSubmittedNewNote
+  case UserSubmittedNote
   case NotePrepared(note: Note)
   case UserRequestedNoteDeletion(index: Int)
   case UserRequestedTimeStampBeUpdated(

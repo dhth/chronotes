@@ -3,7 +3,11 @@ package store.handytools
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
 import org.scalajs.dom.{document, window}
+import io.circe.generic.auto.*
+import io.circe.parser.decode
+import io.circe.syntax.*
 import ManualTheme.*
+import DateCodecs.given
 
 @js.native
 @JSGlobal("navigator.clipboard")
@@ -69,4 +73,25 @@ object ThemeOps {
       "data-theme",
       theme.name
     )
+}
+
+object Storage {
+  def getNotes: Vector[Note] =
+    Option(window.localStorage.getItem("notes")) match {
+      case None => Vector.empty
+      case Some(notesStr) =>
+        decode[Vector[Note]](notesStr) match {
+          case Left(errors) =>
+            window.localStorage.removeItem("notes")
+            Vector.empty
+          case Right(notes) => notes
+        }
+    }
+
+  def storeNotes(notes: Vector[Note]): Unit =
+    val notesString = notes.asJson.toString
+    window.localStorage.setItem("notes", notesString)
+
+  def removeNotes: Unit =
+    window.localStorage.removeItem("notes")
 }

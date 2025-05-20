@@ -15,7 +15,11 @@ object Chronotes extends TyrianIOApp[Msg, Model]:
   def init(flags: Map[String, String]): (Model, Cmd[IO, Msg]) =
     (
       Model.init(),
-      Cmd.Batch(Effects.applyPreviousTheme, Effects.startSystemThemeTracking)
+      Cmd.Batch(
+        Effects.applyPreviousTheme,
+        Effects.startSystemThemeTracking,
+        Effects.loadPreviousNotesFromStorage
+      )
     )
 
   def update(model: Model): Msg => (Model, Cmd[IO, Msg]) = Update.update(model)

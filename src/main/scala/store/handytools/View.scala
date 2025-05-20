@@ -71,7 +71,7 @@ object View {
               ++ "dark:disabled:bg-neutral-400 disabled:bg-neutral-300 text-lg p-2 font-bold "
               ++ "cursor-pointer max-sm:text-sm",
           disabled(note.map(_.body.isEmpty).getOrElse(true)),
-          onClick(Msg.UserSubmittedNewNote)
+          onClick(Msg.UserSubmittedNote)
         )(
           verb
         ),
@@ -173,7 +173,7 @@ object View {
     }
 
     val movedClass = if (recentlyMoved) {
-      "dark:text-orange-300 text-red-500 font-bold"
+      "dark:text-orange-300 text-red-700 font-bold"
     } else {
       "font-semibold"
     }
