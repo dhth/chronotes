@@ -14,7 +14,7 @@ lazy val chronotes =
       scalaVersion := "3.7.0",
       organization := "store.handytools",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "tyrian-io" % "0.13.0"
+        "io.indigoengine" %%% "tyrian-io" % "0.14.0"
       ),
       scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
       scalafixOnCompile := true,
