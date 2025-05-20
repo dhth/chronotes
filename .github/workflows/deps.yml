@@ -1,0 +1,26 @@
+name: deps
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 10 * *'
+
+env:
+  JAVA_VERSION: '24'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scala-steward:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: sbt
+      - name: Scala Steward
+        uses: scala-steward-org/scala-steward-action@v2
