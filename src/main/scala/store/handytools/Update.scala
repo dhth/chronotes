@@ -3,7 +3,6 @@ package store.handytools
 import tyrian.Cmd
 import cats.effect.IO
 import scala.scalajs.js.Date
-import Effects.{copyToClipboard, focusElementById, getCurrentDate}
 import scala.concurrent.duration.DurationInt
 
 object Update {
@@ -12,6 +11,16 @@ object Update {
 
     case Msg.SystemThemeFetched(isSystemThemeDark) =>
       (model.copy(theme = Theme.System(Some(isSystemThemeDark))), Cmd.None)
+
+    case Msg.PreviousNotesFetched(notesFromStorage) =>
+      if (notesFromStorage.isEmpty) {
+        (model, Cmd.None)
+      } else {
+        (
+          model.copy(notes = (notesFromStorage ++ model.notes).sortByTimestamp),
+          Cmd.None
+        )
+      }
 
     case Msg.UserRequestedThemeChange =>
       val nextTheme = model.theme.next
@@ -29,7 +38,7 @@ object Update {
         case Some(existing_note) => existing_note.copy(body = body.trim)
       (model.copy(currentNote = Some(current_note)), Cmd.None)
 
-    case Msg.UserSubmittedNewNote =>
+    case Msg.UserSubmittedNote =>
       model.currentNote match
         case None => (model, Cmd.None)
         case Some(note) =>
@@ -44,29 +53,32 @@ object Update {
                 .lift(index)
                 .fold((model.copy(currentNote = None), Cmd.None)) {
                   existing_note =>
-                    val updatedNote = existing_note.copy(body = note.body)
+                    val updatedNote  = existing_note.copy(body = note.body)
+                    val updatedNotes = model.notes.updated(index, updatedNote)
 
                     (
                       model.copy(
                         currentNote = None,
-                        notes = model.notes.updated(index, updatedNote)
+                        notes = updatedNotes
                       ),
-                      Cmd.None
+                      Effects.saveNotesToStorage(updatedNotes)
                     )
                 }
 
     case Msg.NoOp => (model, Cmd.None)
 
     case Msg.NotePrepared(note) =>
-      (model.copy(notes = model.notes :+ note), Cmd.None)
+      val notes = model.notes :+ note
+      (model.copy(notes = notes), Effects.saveNotesToStorage(notes))
 
     case Msg.UserRequestedNoteDeletion(index) =>
       if (index >= model.notes.length) {
         (model, Cmd.None)
       } else {
+        val notes = model.notes.patch(index, Nil, 1)
         (
-          model.copy(notes = model.notes.patch(index, Nil, 1)),
-          Cmd.None
+          model.copy(notes = notes),
+          Effects.saveNotesToStorage(notes)
         )
       }
 
@@ -84,20 +96,26 @@ object Update {
                   + delta
               )
             )
-        val updatesNotes = model.notes
+        val updatedNotes = model.notes
           .updated(index, updatedNote)
-          .sortWith((a, b) => a.timestamp.getTime() < b.timestamp.getTime())
+          .sortByTimestamp
 
-        if (updatesNotes.map(_.id) == model.notes.map(_.id)) {
-          (model.copy(notes = updatesNotes), Cmd.None)
+        if (updatedNotes.map(_.id) == model.notes.map(_.id)) {
+          (
+            model.copy(notes = updatedNotes),
+            Effects.saveNotesToStorage(updatedNotes)
+          )
         } else {
           (
             model.copy(
-              notes = updatesNotes,
+              notes = updatedNotes,
               movedNoteId = Some(note.id),
               numMovesInProgress = model.numMovesInProgress + 1
             ),
-            Cmd.emitAfterDelay(Msg.ResetNoteOrderingFlash, 1.second)
+            Cmd.Batch(
+              Cmd.emitAfterDelay(Msg.ResetNoteOrderingFlash, 1.second),
+              Effects.saveNotesToStorage(updatedNotes)
+            )
           )
         }
       }
@@ -109,7 +127,7 @@ object Update {
             currentNote =
               Some(PotentialNote(body = note.body, index = Some(index)))
           ),
-          focusElementById("note-input")
+          Effects.focusElementById("note-input")
         )
       }
 
@@ -118,7 +136,7 @@ object Update {
 
     case Msg.UserRequestedCopyToClipboard =>
       val notes = model.notes.map(getNoteLine).mkString("\n")
-      (model, copyToClipboard(notes))
+      (model, Effects.copyToClipboard(notes))
 
     case Msg.CopyContentsAttempted(errored) =>
       errored match
@@ -132,10 +150,11 @@ object Update {
     case Msg.ResetCopyButton => (model.copy(recentlyCopied = false), Cmd.None)
 
     case Msg.UserRequestedSampleNotes =>
-      (model, getCurrentDate())
+      (model, Effects.getCurrentDate)
 
     case Msg.CurrentTimeFetchedForSampleNotes(date) =>
-      (model.copy(notes = sampleNotes(date)), Cmd.None)
+      val notes = sampleNotes(date)
+      (model.copy(notes = notes), Effects.saveNotesToStorage(notes))
 
     case Msg.UserRequestedReset =>
       (
@@ -144,7 +163,10 @@ object Update {
           notes = Vector.empty,
           recentlyCopied = false
         ),
-        focusElementById("note-input")
+        Cmd.Batch(
+          Effects.focusElementById("note-input"),
+          Effects.removeNotesFromStorage
+        )
       )
 
     case Msg.ResetNoteOrderingFlash =>

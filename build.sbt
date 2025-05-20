@@ -4,6 +4,9 @@ import scala.language.postfixOps
 import sbtwelcome._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / semanticdbEnabled    := true
+
+lazy val circeVersion = "0.14.13"
 
 lazy val chronotes =
   (project in file("."))
@@ -14,7 +17,10 @@ lazy val chronotes =
       scalaVersion := "3.7.0",
       organization := "store.handytools",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "tyrian-io" % "0.14.0"
+        "io.indigoengine" %%% "tyrian-io"     % "0.14.0",
+        "io.circe"        %%% "circe-core"    % circeVersion,
+        "io.circe"        %%% "circe-generic" % circeVersion,
+        "io.circe"        %%% "circe-parser"  % circeVersion
       ),
       scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
       scalafixOnCompile := true,
