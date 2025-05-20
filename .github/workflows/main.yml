@@ -1,0 +1,78 @@
+name: main
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  JAVA_VERSION: '24'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: sbt
+      - name: Install scalafmt
+        uses: jaxxstorm/action-install-gh-release@6096f2a2bbfee498ced520b6922ac2c06e990ed2 # v2.1.0
+        with:
+          repo: scalameta/scalafmt
+          tag: v3.9.5
+      - name: Check formatting
+        run: scalafmt --check src/main/scala
+
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - name: Build JS
+        run: sbt fullLinkJS
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: ".bun-version"
+      - run: bun install
+      - run: bun run build
+
+  deploy-staging:
+    needs: [lint, build]
+    runs-on: macos-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy-on-vercel
+        with:
+          environment: preview
+          java_version: ${{ env.JAVA_VERSION }}
+          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}
+
+  deploy-prod:
+    needs: [deploy-staging]
+    runs-on: macos-latest
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy
+        uses: ./.github/actions/deploy-on-vercel
+        with:
+          environment: production
+          java_version: ${{ env.JAVA_VERSION }}
+          vercel_org_id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel_token: ${{ secrets.VERCEL_TOKEN }}

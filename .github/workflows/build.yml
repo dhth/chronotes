@@ -1,14 +1,7 @@
 name: build
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
-    paths:
-      - "build.sbt"
-      - "project/**"
-      - "src/**"
-      - ".github/workflows/build.yml"
 
 env:
   JAVA_VERSION: '24'
