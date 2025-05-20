@@ -10,6 +10,8 @@ env:
 jobs:
   deploy:
     runs-on: macos-latest
+    environment: preview
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
