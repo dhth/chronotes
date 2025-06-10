@@ -2,7 +2,6 @@ name: preview
 
 on:
   pull_request:
-  workflow_dispatch:
 
 env:
   JAVA_VERSION: '24'
