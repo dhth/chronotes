@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">chronotes (WIP 🚧)</h1>
   <p align="center">
-    <a href="https://github.com/dhth/chronotes/actions/workflows/build.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/dhth/chronotes/build.yml?style=flat-square"></a>
+    <a href="https://github.com/dhth/chronotes/actions/workflows/main.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/dhth/chronotes/main.yml?style=flat-square"></a>
   </p>
 </p>
 
