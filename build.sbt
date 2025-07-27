@@ -6,7 +6,7 @@ import sbtwelcome._
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / semanticdbEnabled    := true
 
-lazy val circeVersion = "0.14.13"
+lazy val circeVersion = "0.14.14"
 
 lazy val chronotes =
   (project in file("."))
