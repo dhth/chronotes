@@ -99,7 +99,8 @@ jobs:
       - name: Check if preview should run
         id: check_commit
         run: |
-          commit_message="$(git log -1 --pretty=%B)"
+          # Get the commit message from the PR head, not the merge commit
+          commit_message="$(git log -1 --pretty=%B HEAD^2)"
           echo "Commit message: $commit_message"
           if echo "$commit_message" | grep -q "\[no-preview\]"; then
             echo "Found [no-preview] - will skip preview"
