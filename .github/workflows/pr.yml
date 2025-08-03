@@ -87,28 +87,37 @@ jobs:
       - run: bun install
       - run: bun run build
 
-  preview:
+  check-preview:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      preview: ${{ steps.check_commit.outputs.preview }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check if preview should run
+        id: check_commit
+        run: |
+          commit_message="$(git log -1 --pretty=%B)"
+          echo "Commit message: $commit_message"
+          if echo "$commit_message" | grep -q "\[no-preview\]"; then
+            echo "Found [no-preview] - will skip preview"
+            echo "preview=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "preview=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  preview:
+    needs: check-preview
+    if: ${{ needs.check-preview.outputs.preview == 'true' }}
     runs-on: macos-latest
     environment: preview
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check if preview is to be skipped
-        id: skip_preview
-        run: |
-          commit_message="$(git log -1 --pretty=%B)"
-          echo "Commit message: $commit_message"
-          if echo "$commit_message" | grep -q "\[no-preview\]"; then
-            echo "Found [no-preview] - skipping deploy"
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
       - name: Deploy
-        if: steps.skip_preview.outputs.skip == 'false'
         uses: ./.github/actions/deploy-on-vercel
         with:
           environment: preview
