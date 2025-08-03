@@ -75,6 +75,12 @@ jobs:
       - uses: sbt/setup-sbt@v1
       - name: Build JS
         run: sbt fullLinkJS
+      - name: Check generated JS file exists
+        run: |
+          if [ ! -f target/scala-3.7.2/chronotes-opt/main.js ]; then
+            echo "generated JS file not found"
+            exit 1
+          fi
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: ".bun-version"
@@ -90,7 +96,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Check if preview is to be skipped
+        id: skip_preview
+        run: |
+          commit_message="$(git log -1 --pretty=%B)"
+          if [[ "$commit_message" == *"[no-preview]"* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy
+        if: steps.skip_preview.outputs.skip != 'true'
         uses: ./.github/actions/deploy-on-vercel
         with:
           environment: preview

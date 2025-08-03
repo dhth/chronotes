@@ -76,6 +76,12 @@ jobs:
       - uses: sbt/setup-sbt@v1
       - name: Build JS
         run: sbt fullLinkJS
+      - name: Check generated JS file exists
+        run: |
+          if [ ! -f target/scala-3.7.2/chronotes-opt/main.js ]; then
+            echo "generated JS file not found"
+            exit 1
+          fi
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: ".bun-version"
