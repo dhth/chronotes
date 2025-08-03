@@ -100,13 +100,15 @@ jobs:
         id: skip_preview
         run: |
           commit_message="$(git log -1 --pretty=%B)"
-          if [[ "$commit_message" == *"[no-preview]"* ]]; then
+          echo "Commit message: $commit_message"
+          if echo "$commit_message" | grep -q "\[no-preview\]"; then
+            echo "Found [no-preview] - skipping deploy"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Deploy
-        if: steps.skip_preview.outputs.skip != 'true'
+        if: steps.skip_preview.outputs.skip == 'false'
         uses: ./.github/actions/deploy-on-vercel
         with:
           environment: preview
