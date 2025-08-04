@@ -75,15 +75,44 @@ jobs:
       - uses: sbt/setup-sbt@v1
       - name: Build JS
         run: sbt fullLinkJS
+      - name: Check generated JS file exists
+        run: |
+          if [ ! -f target/scala-3.7.2/chronotes-opt/main.js ]; then
+            echo "generated JS file not found"
+            exit 1
+          fi
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: ".bun-version"
       - run: bun install
       - run: bun run build
 
-  preview:
+  check-preview:
     needs: changes
     if: ${{ needs.changes.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    outputs:
+      preview: ${{ steps.check_commit.outputs.preview }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check if preview should run
+        id: check_commit
+        run: |
+          commit_message="$(git log -1 --pretty=%B)"
+          echo "Commit message: $commit_message"
+          if echo "$commit_message" | grep -q "\[no-preview\]"; then
+            echo "Found [no-preview] - will skip preview"
+            echo "preview=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "preview=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  preview:
+    needs: check-preview
+    if: ${{ needs.check-preview.outputs.preview == 'true' }}
     runs-on: macos-latest
     environment: preview
     timeout-minutes: 10
