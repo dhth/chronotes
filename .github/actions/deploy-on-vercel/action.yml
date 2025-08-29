@@ -26,7 +26,7 @@ runs:
         bun-version-file: ".bun-version"
     - name: Install Vercel CLI
       shell: bash
-      run: bun install --global vercel
+      run: bun install --global vercel@44.7.3
     - name: Pull Vercel environment info
       shell: bash
       env:
