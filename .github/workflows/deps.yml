@@ -23,9 +23,18 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
           cache: sbt
+      - name: Generate GH token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.SCALA_STEWARD_APP_ID }}
+          private-key: ${{ secrets.SCALA_STEWARD_APP_PRIVATE_KEY }}
+          owner: dhth
+          repositories: |
+            chronotes
       - name: Scala Steward
         uses: scala-steward-org/scala-steward-action@v2
         with:
-          github-token: ${{ secrets.SCALA_STEWARD_GITHUB_TOKEN }}
+          github-token: ${{ steps.generate-token.outputs.token }}
           author-email: '41898282+github-actions[bot]@users.noreply.github.com'
           author-name: 'github-actions[bot]'
