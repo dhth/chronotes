@@ -76,7 +76,7 @@ object View {
           verb
         ),
         note.map(_.body.isEmpty).getOrElse(true) match
-          case true => Empty
+          case true  => Empty
           case false =>
             button(
               _class := List(
@@ -166,7 +166,7 @@ object View {
       recentlyMoved: Boolean
   ): Html[Msg] =
     val isDisabled = currentlyEditedIndex.isDefined
-    val cursor = if (isDisabled) {
+    val cursor     = if (isDisabled) {
       "cursor-not-allowed"
     } else {
       "cursor-pointer"

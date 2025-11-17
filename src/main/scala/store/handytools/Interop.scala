@@ -78,7 +78,7 @@ object ThemeOps {
 object Storage {
   def getNotes: Vector[Note] =
     Option(window.localStorage.getItem("notes")) match {
-      case None => Vector.empty
+      case None           => Vector.empty
       case Some(notesStr) =>
         decode[Vector[Note]](notesStr) match {
           case Left(errors) =>
