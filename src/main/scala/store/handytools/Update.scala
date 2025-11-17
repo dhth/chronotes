@@ -40,7 +40,7 @@ object Update {
 
     case Msg.UserSubmittedNote =>
       model.currentNote match
-        case None => (model, Cmd.None)
+        case None       => (model, Cmd.None)
         case Some(note) =>
           note.index match
             case None =>
@@ -140,7 +140,7 @@ object Update {
 
     case Msg.CopyContentsAttempted(errored) =>
       errored match
-        case true => (model, Cmd.None)
+        case true  => (model, Cmd.None)
         case false =>
           (
             model.copy(recentlyCopied = true),
