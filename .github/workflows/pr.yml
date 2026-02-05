@@ -77,7 +77,7 @@ jobs:
         run: sbt fullLinkJS
       - name: Check generated JS file exists
         run: |
-          if [ ! -f target/scala-3.7.4/chronotes-opt/main.js ]; then
+          if [ ! -f target/scala-3.8.1/chronotes-opt/main.js ]; then
             echo "generated JS file not found"
             exit 1
           fi
